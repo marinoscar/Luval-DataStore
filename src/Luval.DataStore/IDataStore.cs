@@ -24,6 +24,23 @@ namespace Luval.DataStore
         Task<int> ExecuteAsync(IDataCommand command, CancellationToken cancelationToken);
 
         /// <summary>
+        /// Executes the command in the <see cref="IDataStore"/>
+        /// </summary>
+        /// <param name="command">The <see cref="IDataCommand"/> with the instructions to execute</param>
+        /// <param name="cancelationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
+        /// <returns>An <see cref="Task{TResult}"/> operation with the result of the command</returns>
+        Task<object> ExecuteScalarAsync(IDataCommand command, CancellationToken cancelationToken);
+
+        /// <summary>
+        /// Executes the command in the <see cref="IDataStore"/>
+        /// </summary>
+        /// <typeparam name="T">The expected data type or the result</typeparam>
+        /// <param name="command">The <see cref="IDataCommand"/> with the instructions to execute</param>
+        /// <param name="cancelationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
+        /// <returns>An <see cref="Task{TResult}"/> operation with the result of the command</returns>
+        Task<T> ExecuteScalarAsync<T>(IDataCommand command, CancellationToken cancelationToken);
+
+        /// <summary>
         /// Executes a command in the <see cref="IDataStore"/>
         /// </summary>
         /// <param name="command">The <see cref="IDataCommand"/> with the instructions to execute</param>
@@ -53,7 +70,7 @@ namespace Luval.DataStore
         /// <param name="command">The <see cref="IDataCommand"/> with the instructions to execute</param>
         /// <param name="cancelationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
         /// <returns>A <see cref="Task{DataSet}"/> operation with the rows from the <see cref="IDataStore"/> </returns>
-        Task<DataSet> ExecuteToDatasetAsync(IDataCommand command, CancellationToken cancelationToken);
+        Task<DataTable> ExecuteDataTableAsync(IDataCommand command, CancellationToken cancelationToken);
 
         #endregion
 
@@ -64,6 +81,21 @@ namespace Luval.DataStore
         /// <param name="command">The <see cref="IDataCommand"/> with the instructions to execute</param>
         /// <returns>The number of affected records </returns>
         int Execute(IDataCommand command);
+
+        /// <summary>
+        /// Executes the command in the <see cref="IDataStore"/>
+        /// </summary>
+        /// <param name="command">The <see cref="IDataCommand"/> with the instructions to execute</param>
+        /// <returns>An object with the result of the command</returns>
+        object ExecuteScalar(IDataCommand command);
+
+        /// <summary>
+        /// Executes the command in the <see cref="IDataStore"/>
+        /// </summary>
+        /// <typeparam name="T">The expected data type or the result</typeparam>
+        /// <param name="command">The <see cref="IDataCommand"/> with the instructions to execute</param>
+        /// <returns>A <see cref="T"/> instance with the result of the command</returns>
+        T ExecuteScalar<T>(IDataCommand command);
 
         /// <summary>
         /// Executes a command in the <see cref="IDataStore"/>
@@ -91,7 +123,7 @@ namespace Luval.DataStore
         /// </summary>
         /// <param name="command">The <see cref="IDataCommand"/> with the instructions to execute</param>
         /// <returns>A <see cref="DataSet"/> with the rows from the <see cref="IDataStore"/> </returns>
-        DataSet ExecuteToDataset(IDataCommand command); 
+        DataTable ExecuteDataTable(IDataCommand command); 
         #endregion
     }
 }

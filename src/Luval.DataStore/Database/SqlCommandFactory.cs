@@ -7,16 +7,15 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore.Database
 {
+    /// <inheritdoc/>
     public class SqlCommandFactory : ISqlCommandFactory
     {
-        protected virtual IDbConnection Connection { get; private set; }
-        protected virtual SqlCommandOptions Options { get; private set; }
+        public virtual SqlCommandOptions Options { get; private set; }
 
         /// <summary>
         /// Creates a new instance of <see cref="SqlCommandFactory"/>
         /// </summary>
-        /// <param name="connection">The <see cref="IDbConnection"/> to leverage to create <see cref="IDbCommand"/></param>
-        public SqlCommandFactory(IDbConnection connection) : this(connection, new SqlCommandOptions() { CommandType = CommandType.Text })
+        public SqlCommandFactory() : this(new SqlCommandOptions() { CommandType = CommandType.Text })
         {
 
         }
@@ -24,9 +23,8 @@ namespace Luval.DataStore.Database
         /// <summary>
         /// Creates a new instance of <see cref="SqlCommandFactory"/>
         /// </summary>
-        /// <param name="connection">The <see cref="IDbConnection"/> to leverage to create <see cref="IDbCommand"/></param>
         /// <param name="commandTimeout">The wait time (in seconds) before terminating the attempt to execute</param>
-        public SqlCommandFactory(IDbConnection connection, int commandTimeout): this(connection, new SqlCommandOptions() { CommandTimeout = commandTimeout, CommandType = CommandType.Text })
+        public SqlCommandFactory(int commandTimeout): this(new SqlCommandOptions() { CommandTimeout = commandTimeout, CommandType = CommandType.Text })
         {
 
         }
@@ -34,22 +32,18 @@ namespace Luval.DataStore.Database
         /// <summary>
         /// Creates a new instance of <see cref="SqlCommandFactory"/>
         /// </summary>
-        /// <param name="connection">The <see cref="IDbConnection"/> to leverage to create <see cref="IDbCommand"/></param>
         /// <param name="options">The options for the <see cref="IDbCommand"/></param>
-        public SqlCommandFactory(IDbConnection connection, SqlCommandOptions options)
+        public SqlCommandFactory(SqlCommandOptions options)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (options == null) throw new ArgumentNullException(nameof(options));
-            Connection = connection;
-            Options = options;
+            Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <inheritdoc/>
-        public IDbCommand Create(IDataCommand command)
+        public IDbCommand Create(IDataCommand command, IDbConnection connection)
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
             var sqlCmd = Convert.ToString(command.Get());
-            var cmd = Connection.CreateCommand();
+            var cmd = connection.CreateCommand();
             PrepareCommand(cmd, sqlCmd);
             return cmd;
         }

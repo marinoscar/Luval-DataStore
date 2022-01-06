@@ -16,13 +16,19 @@ namespace Luval.DataStore
         public abstract int Execute(IDataCommand command);
 
         /// <inheritdoc/>
+        public abstract object ExecuteScalar(IDataCommand command);
+
+        /// <inheritdoc/>
+        public abstract T ExecuteScalar<T>(IDataCommand command);
+
+        /// <inheritdoc/>
         public abstract IDataReader ExecuteToDataReader(IDataCommand command);
 
         /// <inheritdoc/>
         public abstract IEnumerable<IDataRecord> ExecuteToDataRecord(IDataCommand command);
 
         /// <inheritdoc/>
-        public abstract DataSet ExecuteToDataset(IDataCommand command);
+        public abstract DataTable ExecuteDataTable(IDataCommand command);
 
         /// <inheritdoc/>
         public abstract IEnumerable<TEntity> ExecuteToEntityList<TEntity>(IDataCommand command);
@@ -35,6 +41,18 @@ namespace Luval.DataStore
         public Task<int> ExecuteAsync(IDataCommand command, CancellationToken cancelationToken)
         {
             return Task.Run(() => { return Execute(command); }, cancelationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<object> ExecuteScalarAsync(IDataCommand command, CancellationToken cancelationToken)
+        {
+            return Task.Run(() => { return ExecuteScalar(command); }, cancelationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<T> ExecuteScalarAsync<T>(IDataCommand command, CancellationToken cancelationToken)
+        {
+            return Task.Run(() => { return ExecuteScalar<T>(command); }, cancelationToken);
         }
 
 
@@ -57,9 +75,9 @@ namespace Luval.DataStore
         }
 
         /// <inheritdoc/>
-        public Task<DataSet> ExecuteToDatasetAsync(IDataCommand command, CancellationToken cancelationToken)
+        public Task<DataTable> ExecuteDataTableAsync(IDataCommand command, CancellationToken cancelationToken)
         {
-            return Task.Run(() => { return ExecuteToDataset(command); }, cancelationToken);
+            return Task.Run(() => { return ExecuteDataTable(command); }, cancelationToken);
         }
 
         #endregion

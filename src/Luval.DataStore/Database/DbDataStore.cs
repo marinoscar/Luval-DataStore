@@ -16,9 +16,10 @@ namespace Luval.DataStore.Database
     {
 
         #region Variable Declaration
-        
+
         private readonly Func<IDbConnection> _factory;
-        
+        private readonly ISqlCommandFactory _sqlCmdFactory;
+        private readonly IDataRecordMapper _dataRecordMapper;
 
         #endregion
 
@@ -28,9 +29,11 @@ namespace Luval.DataStore.Database
         /// Creates a new instance of <see cref="DbDataStore"/>
         /// </summary>
         /// <param name="connectionFactory"></param>
-        public DbDataStore(Func<IDbConnection> connectionFactory)
+        public DbDataStore(Func<IDbConnection> connectionFactory, ISqlCommandFactory sqlCommandFactory, IDataRecordMapper dataRecordMapper)
         {
-            _factory = connectionFactory;
+            _factory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+            _sqlCmdFactory = sqlCommandFactory ?? throw new ArgumentNullException(nameof(sqlCommandFactory));
+            _dataRecordMapper = dataRecordMapper ?? throw new ArgumentNullException(nameof(dataRecordMapper));
         }
 
         #endregion
@@ -40,38 +43,75 @@ namespace Luval.DataStore.Database
         /// <inheritdoc/>
         public override int Execute(IDataCommand command)
         {
-            throw new NotImplementedException();
+            var rows = 0;
+            UsingCommand(command, (cmd) =>
+            {
+                rows = cmd.ExecuteNonQuery();
+            });
+            return rows;
+        }
+
+        /// <inheritdoc/>
+        public override object ExecuteScalar(IDataCommand command)
+        {
+            object res = null;
+            UsingCommand(command, (cmd) => {
+                res = cmd.ExecuteScalar();
+            });
+            return res;
+        }
+
+        /// <inheritdoc/>
+        public override T ExecuteScalar<T>(IDataCommand command)
+        {
+            var res = ExecuteScalar(command);
+            return (T)Convert.ChangeType(res, typeof(T));
         }
 
         /// <inheritdoc/>
         public override IDataReader ExecuteToDataReader(IDataCommand command)
         {
-            throw new NotImplementedException();
+            IDataReader dataReader = null;
+            UsingCommand(command, (cmd) =>
+            {
+                dataReader = cmd.ExecuteReader();
+            });
+            return dataReader;
         }
 
         /// <inheritdoc/>
         public override IEnumerable<IDataRecord> ExecuteToDataRecord(IDataCommand command)
         {
-            throw new NotImplementedException();
+            var data = new List<IDataRecord>();
+            UsingReader(command, (r) => { data.Add(r); });
+            return data;
         }
 
         /// <inheritdoc/>
-        public override DataSet ExecuteToDataset(IDataCommand command)
+        public override DataTable ExecuteDataTable(IDataCommand command)
         {
-            throw new NotImplementedException();
+            DataTable dt = null;
+            UsingReader(command, (r) => {
+                if (dt == null) dt = CreateTableSchema(r);
+                dt.Rows.Add(CreateFromRecord(r, dt));
+            });
+            return dt;
         }
 
         /// <inheritdoc/>
         public override IEnumerable<TEntity> ExecuteToEntityList<TEntity>(IDataCommand command)
         {
-            throw new NotImplementedException();
+            var data = new List<TEntity>();
+            UsingReader(command, (r) => {
+                data.Add(_dataRecordMapper.FromDataRecord<TEntity>(r));
+            });
+            return data;
         }
 
         #endregion
 
         #region Database Methods
 
-        #region Private Methods
         private void OpenConnection(IDbConnection conn)
         {
             try
@@ -97,106 +137,74 @@ namespace Luval.DataStore.Database
             }
         }
 
-
         private void WorkTransaction(IDbTransaction tran, Action action)
         {
             if (tran == null || tran.Connection == null || tran.Connection.State == ConnectionState.Closed) return;
             action();
-        } 
-
-        #endregion
-
-        /// <summary>
-        /// Encapsulates the use of a <see cref="IDbConnection"/> object
-        /// </summary>
-        /// <param name="doSomething">Action that would use the <see cref="IDbConnection"/> object</param>
-        public void WithConnection(Action<IDbConnection> doSomething)
-        {
-            using (var conn = _factory())
-            {
-                if (conn == null) throw new ArgumentNullException(nameof(conn), "Connection is not properly provided");
-                doSomething(conn);
-            }
         }
 
-        /// <summary>
-        /// Encapsulates the use of a <see cref="IDbTransaction"/> object
-        /// </summary>
-        /// <param name="doSomething">Action that would use the <see cref="IDbTransaction"/> object</param>
-        public void WithTransaction(Action<IDbTransaction> doSomething)
+        private void UsingCommand(IDataCommand command, Action<IDbCommand> runCommand)
         {
-            WithConnection((conn) =>
+            try
             {
-                try
+                using (var conn = _factory())
                 {
                     OpenConnection(conn);
-                    using (var tran = conn.BeginTransaction())
+                    using (var cmd = _sqlCmdFactory.Create(command, conn))
                     {
-                        try
+                        using (var tran = conn.BeginTransaction(_sqlCmdFactory.Options.IsolationLevel))
                         {
-                            doSomething(tran);
-                            WorkTransaction(tran, () => { tran.Commit(); });
-                        }
-                        catch (Exception ex)
-                        {
-                            WorkTransaction(tran, () => { tran.Rollback(); });
-
-                            if (!typeof(DatabaseException).IsAssignableFrom(ex.GetType()))
-                                throw new DatabaseException("Failed to complete the transaction", ex);
-                            throw;
+                            try
+                            {
+                                runCommand(cmd);
+                                WorkTransaction(tran, () => { tran.Commit(); });
+                            }
+                            catch (Exception ex)
+                            {
+                                WorkTransaction(tran, () => { tran.Rollback(); });
+                                throw new DatabaseException(string.Format("Failed to run command: {0}", cmd.CommandText), ex);
+                            }
                         }
                     }
                     CloseConnection(conn);
                 }
-                catch (Exception ex)
-                {
-                    if (!typeof(DatabaseException).IsAssignableFrom(ex.GetType()))
-                        throw new DatabaseException("Failed to begin or rollback the transaction", ex);
-                    throw;
-                }
-            });
-        }
-
-        /// <summary>
-        /// Encapsulates the use of a <see cref="IDbCommand"/> object
-        /// </summary>
-        /// <param name="doSomething">Action that would use the <see cref="IDbCommand"/> object</param>
-        public void WithCommand(Action<IDbCommand> doSomething)
-        {
-
-            WithTransaction((tran) =>
-            {
-                using (var cmd = tran.Connection.CreateCommand())
-                {
-                    cmd.Transaction = tran;
-                    try
-                    {
-                        doSomething(cmd);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new DatabaseException("Unable to execute sql command.",
-                            new DatabaseException(string.Format("COMMAND FAILURE: {0}", cmd.CommandText), ex));
-                    }
-                }
-            });
-        }
-
-        /// <summary>
-        /// Encapsulates the reading of a <see cref="IDataReader"/> and its <see cref="IDataRecord"/>
-        /// </summary>
-        /// <param name="cmd">The <see cref="IDbCommand"/> to use for the <see cref="IDataReader"/></param>
-        /// <param name="behavior">The <see cref="CommandBehavior"/> to use</param>
-        /// <param name="doSomething">Action that would be used for the <see cref="IDataRecord"/></param>
-        public void WhileReading(IDbCommand cmd, CommandBehavior behavior, Action<IDataRecord> doSomething)
-        {
-            using (var reader = cmd.ExecuteReader(behavior))
-            {
-                while (reader.Read())
-                {
-                    doSomething(reader);
-                }
             }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Command failed", ex);
+            }
+        }
+
+        private void UsingReader(IDataCommand command, Action<IDataRecord> runCommand)
+        {
+            UsingCommand(command, (cmd) =>
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        runCommand(new DataRecord(reader));
+                    }
+                }
+            });
+        }
+
+        private DataTable CreateTableSchema(IDataRecord record)
+        {
+            var dt = new DataTable();
+            for (int i = 0; i < record.FieldCount; i++)
+            {
+                dt.Columns.Add(record.GetName(i), record.GetFieldType(i));
+            }
+            return dt;
+        }
+
+        private DataRow CreateFromRecord(IDataRecord record, DataTable dt)
+        {
+            var row = dt.NewRow();
+            for (int i = 0; i < record.FieldCount; i++)
+                row[record.GetName(i)] = record.GetValue(i);
+            return row;
         }
 
         #endregion

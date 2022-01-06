@@ -14,6 +14,16 @@ namespace Luval.DataStore.Database
     public class SqlCommandOptions
     {
         /// <summary>
+        /// Creates a new instance of <see cref="SqlCommandOptions"/>
+        /// </summary>
+        public SqlCommandOptions()
+        {
+            CommandType = CommandType.Text;
+            IsolationLevel = IsolationLevel.ReadCommitted;
+            Parameters = new List<IDbDataParameter>();
+        }
+
+        /// <summary>
         /// Gets or sets the wait time (in seconds) before terminating the attempt to execute
         /// a command and generating an error.
         /// </summary>
@@ -26,5 +36,10 @@ namespace Luval.DataStore.Database
         /// Gets or sets the Gets the <see cref="IDataParameterCollection"/> with the parameters for the SQL statement or stored procedure.
         /// </summary>
         public IEnumerable<IDbDataParameter> Parameters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <seealso cref="IDbCommand.Transaction"/> <seealso cref="IDbTransaction.IsolationLevel"/>
+        /// </summary>
+        public IsolationLevel IsolationLevel { get; set; }
     }
 }

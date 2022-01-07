@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Common;
 using System.Data;
+using System.Threading;
+using Luval.DataStore.Extensions;
 
 namespace Luval.DataStore.Database
 {
@@ -12,7 +14,7 @@ namespace Luval.DataStore.Database
     /// Provides an implementation of <see cref="IDataStore"/> for relational databases using
     /// implementations of the <see cref="IDbConnection"/> interface
     /// </summary>
-    public class DbDataStore : DataStore
+    public class DbDataStore : DataStore, IDatabaseStore
     {
 
         #region Variable Declaration
@@ -38,7 +40,7 @@ namespace Luval.DataStore.Database
 
         #endregion
 
-        #region Interface Implementation
+        #region IDataStore Implementation
 
         /// <inheritdoc/>
         public override int Execute(IDataCommand command)
@@ -110,7 +112,95 @@ namespace Luval.DataStore.Database
 
         #endregion
 
-        #region Database Methods
+        #region IDatabaseStore Implementation
+
+        /// <inheritdoc/>
+        public Task<int> ExecuteAsync(string command, CancellationToken cancelationToken)
+        {
+            return ExecuteAsync(command.ToCommand(), cancelationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<object> ExecuteScalarAsync(string command, CancellationToken cancelationToken)
+        {
+            return ExecuteScalarAsync(command.ToCommand(), cancelationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<T> ExecuteScalarAsync<T>(string command, CancellationToken cancelationToken)
+        {
+            return ExecuteScalarAsync<T>(command.ToCommand(), cancelationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<IEnumerable<IDataRecord>> ExecuteToDataRecordAsync(string command, CancellationToken cancelationToken)
+        {
+            return ExecuteToDataRecordAsync(command.ToCommand(), cancelationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<IDataReader> ExecuteToDataReaderAsync(string command, CancellationToken cancelationToken)
+        {
+            return ExecuteToDataReaderAsync(command.ToCommand(), cancelationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<IEnumerable<TEntity>> ExecuteToEntityListAsync<TEntity>(string command, CancellationToken cancelationToken)
+        {
+            return ExecuteToEntityListAsync<TEntity>(command.ToCommand(), cancelationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<DataTable> ExecuteDataTableAsync(string command, CancellationToken cancelationToken)
+        {
+            return ExecuteDataTableAsync(command.ToCommand(), cancelationToken);
+        }
+
+        /// <inheritdoc/>
+        public int Execute(string command)
+        {
+            return Execute(command.ToCommand());
+        }
+
+        /// <inheritdoc/>
+        public object ExecuteScalar(string command)
+        {
+            return ExecuteScalar(command.ToCommand());
+        }
+
+        /// <inheritdoc/>
+        public T ExecuteScalar<T>(string command)
+        {
+            return ExecuteScalar<T>(command.ToCommand());
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<IDataRecord> ExecuteToDataRecord(string command)
+        {
+            return ExecuteToDataRecord(command.ToCommand());
+        }
+
+        /// <inheritdoc/>
+        public IDataReader ExecuteToDataReader(string command)
+        {
+            return ExecuteToDataReader(command.ToCommand());
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<TEntity> ExecuteToEntityList<TEntity>(string command)
+        {
+            return ExecuteToEntityList<TEntity>(command.ToCommand());
+        }
+
+        /// <inheritdoc/>
+        public DataTable ExecuteDataTable(string command)
+        {
+            return ExecuteDataTable(command.ToCommand());
+        }
+
+        #endregion
+
+        #region Private Methods
 
         private void OpenConnection(IDbConnection conn)
         {

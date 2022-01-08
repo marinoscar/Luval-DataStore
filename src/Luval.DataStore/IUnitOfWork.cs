@@ -34,17 +34,33 @@ namespace Luval.DataStore
         /// <summary>
         /// Event is triggered before an entity is inserted to the <see cref="IDataStore"/>
         /// </summary>
-        event EventHandler<UnitOfWorkEventArgs<TEntity>> InsertingEntity;
+        event EventHandler<ModifyingEntityEventArgs<TEntity>> InsertingEntity;
 
         /// <summary>
         /// Event is triggered before an entity is updated to the <see cref="IDataStore"/>
         /// </summary>
-        event EventHandler<UnitOfWorkEventArgs<TEntity>> UpdatingEntity;
+        event EventHandler<ModifyingEntityEventArgs<TEntity>> UpdatingEntity;
 
         /// <summary>
         /// Event is triggered before an entity is deleted from <see cref="IDataStore"/>
         /// </summary>
-        event EventHandler<UnitOfWorkEventArgs<TEntity>> DeletingEntity;
+        event EventHandler<ModifyingEntityEventArgs<TEntity>> DeletingEntity;
+
+        /// <summary>
+        /// Event is triggered after an entity is inserted in the <see cref="IDataStore"/>
+        /// </summary>
+        event EventHandler<ModifiedEntityEventArgs<TEntity>> EntityInserted;
+
+        /// <summary>
+        /// Event is triggered after an entity is updated in the <see cref="IDataStore"/>
+        /// </summary>
+        event EventHandler<ModifiedEntityEventArgs<TEntity>> EntityUpdated;
+
+        /// <summary>
+        /// Event is triggered after an entity is deleted from the <see cref="IDataStore"/>
+        /// </summary>
+        event EventHandler<ModifiedEntityEventArgs<TEntity>> EntityDeleted;
+
 
     }
 }

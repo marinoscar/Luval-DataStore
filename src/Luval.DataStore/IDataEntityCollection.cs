@@ -14,7 +14,7 @@ namespace Luval.DataStore
     /// Represents the implementation of a collection of Data Entities
     /// </summary>
     /// <typeparam name="TEntity">The <see cref="Type"/> that represents the data entity</typeparam>
-    public interface IDataEntityCollection<TEntity> : ICollection where TEntity : class
+    public interface IDataEntityCollection<TEntity> : ICollection, IDisposable where TEntity : class
     {
         /// <summary>
         /// Gets the <see cref="IDataStore"/> implementation to use
@@ -90,6 +90,11 @@ namespace Luval.DataStore
         /// Gets the entities that have been deleted in memory to the collection
         /// </summary>
         IEnumerable<TEntity> Deleted { get; }
+
+        /// <summary>
+        /// Clears all the entities in the collection
+        /// </summary>
+        void Clear();
     }
 
     public interface IDataRecordEntityCollection : IDataEntityCollection<IDictionary<string, object>>

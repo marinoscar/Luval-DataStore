@@ -12,7 +12,7 @@ namespace Luval.DataStore
     public class EntityCollection<TEntity> : IDataEntityCollection<TEntity> where TEntity : class
     {
 
-        private readonly IList<Entry> _internal;
+        private IList<Entry> _internal;
 
         /// <summary>
         /// Creates a new instance
@@ -84,6 +84,19 @@ namespace Luval.DataStore
         public Task<IEnumerable<TEntity>> QueryAsync(IDataCommand command, CancellationToken cancellationToken)
         {
             return Task.Run(() => Query(command), cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public void Clear()
+        {
+            _internal.Clear();
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Clear();
+            _internal = null;
         }
 
         #endregion

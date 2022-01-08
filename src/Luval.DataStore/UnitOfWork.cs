@@ -39,14 +39,25 @@ namespace Luval.DataStore
         /// </summary>
         public IDataCommandProvider<TEntity> CommandProvider { get; private set; }
 
-        /// <inheritdoc/>
-        public event EventHandler<UnitOfWorkEventArgs<TEntity>> InsertingEntity;
 
         /// <inheritdoc/>
-        public event EventHandler<UnitOfWorkEventArgs<TEntity>> UpdatingEntity;
+        public event EventHandler<ModifyingEntityEventArgs<TEntity>> InsertingEntity;
 
         /// <inheritdoc/>
-        public event EventHandler<UnitOfWorkEventArgs<TEntity>> DeletingEntity;
+        public event EventHandler<ModifyingEntityEventArgs<TEntity>> UpdatingEntity;
+
+        /// <inheritdoc/>
+        public event EventHandler<ModifyingEntityEventArgs<TEntity>> DeletingEntity;
+
+        /// <inheritdoc/>
+        public event EventHandler<ModifiedEntityEventArgs<TEntity>> EntityInserted;
+
+        /// <inheritdoc/>
+        public event EventHandler<ModifiedEntityEventArgs<TEntity>> EntityUpdated;
+
+        /// <inheritdoc/>
+        public event EventHandler<ModifiedEntityEventArgs<TEntity>> EntityDeleted;
+
 
         /// <inheritdoc/>
         public virtual int SaveChanges()
@@ -59,19 +70,23 @@ namespace Luval.DataStore
                     var arg = OnInserting(insertEnt);
                     if (arg != null && arg.Cancel) continue;
                     res += DataStore.Execute(CommandProvider.GetInsert(insertEnt));
+                    OnEntityInserted(insertEnt);
                 }
                 foreach (var updateEnt in Entities.Updated)
                 {
                     var arg = OnUpdating(updateEnt);
                     if (arg != null && arg.Cancel) continue;
                     res += DataStore.Execute(CommandProvider.GetUpdate(updateEnt));
+                    OnEntityUpdated(updateEnt);
                 }
                 foreach (var deleteEnt in Entities.Deleted)
                 {
                     var arg = OnDeleting(deleteEnt);
                     if (arg != null && arg.Cancel) continue;
                     res += DataStore.Execute(CommandProvider.GetDelete(deleteEnt));
+                    OnEntityDeleted(deleteEnt);
                 }
+                Entities.Clear(); // clears the entities
             }
             catch (Exception ex)
             {
@@ -90,8 +105,8 @@ namespace Luval.DataStore
         /// Invokes the <seealso cref="IUnitOfWork{TEntity}.InsertingEntity"/> event
         /// </summary>
         /// <param name="entity">The entity to insert</param>
-        /// <returns>The instance of the <see cref="UnitOfWorkEventArgs{TEntity}"/> returned by the event</returns>
-        protected virtual UnitOfWorkEventArgs<TEntity> OnInserting(TEntity entity)
+        /// <returns>The instance of the <see cref="ModifyingEntityEventArgs{TEntity}"/> returned by the event</returns>
+        protected virtual ModifyingEntityEventArgs<TEntity> OnInserting(TEntity entity)
         {
             return TriggerEvent(entity, InsertingEntity);
         }
@@ -100,8 +115,8 @@ namespace Luval.DataStore
         /// Invokes the <seealso cref="IUnitOfWork{TEntity}.UpdatingEntity"/> event
         /// </summary>
         /// <param name="entity">The entity to update</param>
-        /// <returns>The instance of the <see cref="UnitOfWorkEventArgs{TEntity}"/> returned by the event</returns>
-        protected virtual UnitOfWorkEventArgs<TEntity> OnUpdating(TEntity entity)
+        /// <returns>The instance of the <see cref="ModifyingEntityEventArgs{TEntity}"/> returned by the event</returns>
+        protected virtual ModifyingEntityEventArgs<TEntity> OnUpdating(TEntity entity)
         {
             return TriggerEvent(entity, UpdatingEntity);
         }
@@ -110,17 +125,49 @@ namespace Luval.DataStore
         /// Invokes the <seealso cref="IUnitOfWork{TEntity}.DeletingEntity"/> event
         /// </summary>
         /// <param name="entity">The entity to delete</param>
-        /// <returns>The instance of the <see cref="UnitOfWorkEventArgs{TEntity}"/> returned by the event</returns>
-        protected virtual UnitOfWorkEventArgs<TEntity> OnDeleting(TEntity entity)
+        /// <returns>The instance of the <see cref="ModifyingEntityEventArgs{TEntity}"/> returned by the event</returns>
+        protected virtual ModifyingEntityEventArgs<TEntity> OnDeleting(TEntity entity)
         {
             return TriggerEvent(entity, DeletingEntity);
         }
 
-        private UnitOfWorkEventArgs<TEntity> TriggerEvent(TEntity entity, EventHandler<UnitOfWorkEventArgs<TEntity>> eventHandler)
+        /// <summary>
+        /// Invokes the <see cref="IUnitOfWork{TEntity}.EntityInserted"/> event
+        /// </summary>
+        /// <param name="entity">The affected entity</param>
+        protected virtual void OnEntityInserted(TEntity entity)
         {
-            var args = new UnitOfWorkEventArgs<TEntity>(entity);
+            TriggerEvent(entity, EntityInserted);
+        }
+
+        /// <summary>
+        /// Invokes the <see cref="IUnitOfWork{TEntity}.EntityUpdated"/> event
+        /// </summary>
+        /// <param name="entity">The affected entity</param>
+        protected virtual void OnEntityUpdated(TEntity entity)
+        {
+            TriggerEvent(entity, EntityUpdated);
+        }
+
+        /// <summary>
+        /// Invokes the <see cref="IUnitOfWork{TEntity}.EntityDeleted"/> event
+        /// </summary>
+        /// <param name="entity">The affected entity</param>
+        protected virtual void OnEntityDeleted(TEntity entity)
+        {
+            TriggerEvent(entity, EntityDeleted);
+        }
+
+        private ModifyingEntityEventArgs<TEntity> TriggerEvent(TEntity entity, EventHandler<ModifyingEntityEventArgs<TEntity>> eventHandler)
+        {
+            var args = new ModifyingEntityEventArgs<TEntity>(entity);
             eventHandler?.Invoke(this, args);
             return args;
+        }
+
+        private void TriggerEvent(TEntity entity, EventHandler<ModifiedEntityEventArgs<TEntity>> eventHandler)
+        {
+            eventHandler?.Invoke(this, new ModifiedEntityEventArgs<TEntity>(entity));
         }
     }
 

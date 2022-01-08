@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore
 {
+    /// <inheritdoc/>
     public class EntityCollection<TEntity> : IDataEntityCollection<TEntity> where TEntity : class
     {
 

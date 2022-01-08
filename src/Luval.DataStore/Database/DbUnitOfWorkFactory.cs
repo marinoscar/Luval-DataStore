@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore.Database
 {
-
+    /// <inheritdoc/>
     public class DbUnitOfWorkFactory: IUnitOfWorkFactory
     {
 

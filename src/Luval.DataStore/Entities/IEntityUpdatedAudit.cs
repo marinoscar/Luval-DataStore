@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore.Entities
 {
+    /// <summary>
+    /// Provides an implementation for an entity that has properties to audit when and who updated a record
+    /// </summary>
     public interface IEntityUpdatedAudit
     {
         /// <summary>

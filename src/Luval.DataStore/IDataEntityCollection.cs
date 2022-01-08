@@ -67,7 +67,7 @@ namespace Luval.DataStore
         /// <param name="orderByExpression">The expression to sort the result set, null by default</param>
         /// <param name="descending">Indetifies if in case the <paramref name="orderByExpression"/> is provided if the order is descending, otherwise is ascending</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
-        /// <returns>A <see cref="Task{IEnumerable{TEntity}}"/> with the operation with the data</returns>
+        /// <returns>A <see cref="Task{TResult}"/> with the operation with the data</returns>
         Task<IEnumerable<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression, bool descending, CancellationToken cancellationToken);
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Luval.DataStore
         /// </summary>
         /// <param name="command">The command to execute</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
-        /// <returns>A <see cref="Task{IEnumerable{TEntity}}"/> with the operation with the data</returns>
+        /// <returns>A <see cref="Task{TResult}"/> with the operation with the data</returns>
         Task<IEnumerable<TEntity>> QueryAsync(IDataCommand command, CancellationToken cancellationToken);
 
         /// <summary>

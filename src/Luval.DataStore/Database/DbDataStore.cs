@@ -30,7 +30,9 @@ namespace Luval.DataStore.Database
         /// <summary>
         /// Creates a new instance of <see cref="DbDataStore"/>
         /// </summary>
-        /// <param name="connectionFactory"></param>
+        /// <param name="connectionFactory">The expression to create a new <see cref="IDbConnection"/></param>
+        /// <param name="dataRecordMapper">The <see cref="IDataRecordMapper"/> implementation to use</param>
+        /// <param name="sqlCommandFactory">The <see cref="ISqlCommandFactory"/> implementation to use to create the sql statements</param>
         public DbDataStore(Func<IDbConnection> connectionFactory, ISqlCommandFactory sqlCommandFactory, IDataRecordMapper dataRecordMapper)
         {
             _factory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));

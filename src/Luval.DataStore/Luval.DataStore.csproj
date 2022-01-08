@@ -2,7 +2,36 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <IsPublishable>True</IsPublishable>
+    <ApplicationIcon>luval-128x128.ico</ApplicationIcon>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Oscar Marin</Authors>
+    <Company>Oscar Marin</Company>
+    <Copyright>Oscar Marin</Copyright>
+    <Description>Provides an abstraction to interact with multiple data stores using a object relational mapping and the Unit of Work pattern</Description>
+    <PackageProjectUrl>https://github.com/marinoscar/Luval-DataStore</PackageProjectUrl>
+    <PackageIcon>LV-Luval-Logo-200x200.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/marinoscar/Luval-DataStore.git</RepositoryUrl>
+    <AssemblyVersion>1.0.0.22007</AssemblyVersion>
+    <FileVersion>1.0.0.22007</FileVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="luval-128x128.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\marin\code\img\LV-Luval-Logo-200x200.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />

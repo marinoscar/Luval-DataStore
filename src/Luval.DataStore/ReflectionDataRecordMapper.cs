@@ -21,6 +21,9 @@ namespace Luval.DataStore
         private readonly ICacheProvider<FieldAndType, PropertyInfo> _entityMapCache;
         private readonly ICacheProvider<Type, EntityMetadata> _metadataCache;
 
+        /// <summary>
+        /// Creates a new instance
+        /// </summary>
         public ReflectionDataRecordMapper()
         {
             _entityMapCache = new MemoryCacheStore<FieldAndType, PropertyInfo>();

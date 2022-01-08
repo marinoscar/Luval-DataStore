@@ -24,11 +24,16 @@ namespace Luval.DataStore.Extensions
             HexValues = new ReadOnlyCollection<string>(hexValues);
         }
 
+        /// <summary>
+        /// Converts the by to Hex
+        /// </summary>
+        /// <param name="b"></param>
+        /// <returns></returns>
         public static string ToHex(this byte b)
         {
             return HexValues[b];
         }
 
-        public static readonly ReadOnlyCollection<string> HexValues;
+        private static readonly ReadOnlyCollection<string> HexValues;
     }
 }

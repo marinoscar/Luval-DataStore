@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore.Database.SqlServer
 {
+    /// <inheritdoc/>
     public class SqlEntityCollectionFactory : DbEntityCollectionFactory
     {
         /// <summary>

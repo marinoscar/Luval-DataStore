@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore.Extensions
 {
+    /// <summary>
+    /// Provides extension methods for the <see cref="MemberInfo"/> class
+    /// </summary>
     public static class MemberInfoExtensions
     {
         /// <summary>

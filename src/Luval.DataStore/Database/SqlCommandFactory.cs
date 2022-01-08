@@ -10,6 +10,7 @@ namespace Luval.DataStore.Database
     /// <inheritdoc/>
     public class SqlCommandFactory : ISqlCommandFactory
     {
+        /// <inheritdoc/>
         public virtual SqlCommandOptions Options { get; private set; }
 
         /// <summary>

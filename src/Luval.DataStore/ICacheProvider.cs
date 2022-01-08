@@ -14,17 +14,17 @@ namespace Luval.DataStore
     public interface ICacheProvider<TKey, TEntity> : IDisposable
     {
         /// <summary>
-        /// Gets or add an <see cref="TEntity"/> to the cache store
+        /// Gets or add an object to the cache store
         /// </summary>
-        /// <param name="key">The <see cref="TKey"/> value to use as key</param>
+        /// <param name="key">The value to use as key</param>
         /// <param name="add">A delegate to get a new value if not present in the cache</param>
         /// <returns>An instance of the cached value</returns>
         TEntity GetOrAdd(TKey key, Func<TEntity> add);
 
         /// <summary>
-        /// Gets or add an <see cref="TEntity"/> to the cache store
+        /// Gets or add an object to the cache store
         /// </summary>
-        /// <param name="key">The <see cref="TKey"/> value to use as key</param>
+        /// <param name="key">The value to use as key</param>
         /// <param name="add">A delegate to get a new value if not present in the cache</param>
         /// <returns>An <see cref="Task"/> operation with the instance of the cached value</returns>
         Task<TEntity> GetOrAddAsync(TKey key, Func<Task<TEntity>> add);

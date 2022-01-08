@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore.Database
 {
+    /// <inheritdoc/>
     public class AnsiSqlCommandProvider<TEntity> : IDataCommandProvider<TEntity> where TEntity : class
     {
 
@@ -68,6 +69,13 @@ namespace Luval.DataStore.Database
 
         #region Sql Methods
 
+        /// <summary>
+        /// Generates a SQL insert statement
+        /// </summary>
+        /// <param name="schema">The <see cref="DbTableSchema"/> to use</param>
+        /// <param name="record">The <see cref="IDataRecord"/> with the data for the statement</param>
+        /// <param name="includeChildren">Indicates if for complex entities if should also create commands for the child entities</param>
+        /// <returns>A sql statement</returns>
         protected virtual string GetInsert(DbTableSchema schema, IDataRecord record, bool includeChildren = false)
         {
             var sw = new StringWriter();
@@ -83,6 +91,11 @@ namespace Luval.DataStore.Database
             return sw.ToString();
         }
 
+        /// <summary>
+        /// Generates a SQL update statement
+        /// </summary>
+        /// <param name="record">The <see cref="IDataRecord"/> with the data for the statement</param>
+        /// <returns>A sql statement</returns>
         protected virtual string GetUpdate(IDataRecord record)
         {
             var sw = new StringWriter();
@@ -92,6 +105,11 @@ namespace Luval.DataStore.Database
             return sw.ToString();
         }
 
+        /// <summary>
+        /// Generates a SQL delete statement
+        /// </summary>
+        /// <param name="record">The <see cref="IDataRecord"/> with the data for the statement</param>
+        /// <returns>A sql statement</returns>
         protected virtual string GetDelete(IDataRecord record)
         {
             var sw = new StringWriter();
@@ -100,6 +118,10 @@ namespace Luval.DataStore.Database
             return sw.ToString();
         }
 
+        /// <summary>
+        /// Gets a sql select statement on the entity
+        /// </summary>
+        /// <returns>A sql statement</returns>
         protected virtual string GetReadAllCommand()
         {
             var sw = new StringWriter();
@@ -109,6 +131,13 @@ namespace Luval.DataStore.Database
             return sw.ToString();
         }
 
+        /// <summary>
+        /// Gets a sql query command on the data entity
+        /// </summary>
+        /// <param name="filterExpression">The expression used to filter the data</param>
+        /// <param name="orderByExpression">The expression used to sort the data</param>
+        /// <param name="descending">Indicates if the order should be descending, otherwhise it would be ascending</param>
+        /// <returns>A sql statement</returns>
         public string QueryCommand(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression = null, bool descending = false)
         {
             var whereStatemet = _printer.Where(filterExpression);

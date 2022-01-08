@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore
 {
+    /// <summary>
+    /// Provides an implemention to parse an <see cref="Expression"/> tree into a sql string
+    /// </summary>
     public interface ISqlExpressionPrinter
     {
         /// <summary>
@@ -22,6 +25,7 @@ namespace Luval.DataStore
         /// </summary>
         /// <typeparam name="TEntity">The <see cref="Type"/> that represents the data entity</typeparam>
         /// <param name="orderByExpression">The order by expression to use</param>
+        /// <param name="descending">Indicates if the order should be descending, otherwhise it would be ascending</param>
         /// <returns>A sql statement for the entity</returns>
         string OrderBy<TEntity>(Expression<Func<TEntity, object>> orderByExpression, bool descending);
 

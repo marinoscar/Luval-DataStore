@@ -14,6 +14,9 @@ namespace Luval.DataStore.Database
     /// </summary>
     public class SqlFormatter : IFormatProvider, ICustomFormatter
     {
+        /// <summary>
+        /// Singleton implementation of <see cref="SqlFormatter"/>
+        /// </summary>
         public readonly static SqlFormatter Instance = new SqlFormatter();
 
         /// <inheritdoc/>
@@ -34,7 +37,7 @@ namespace Luval.DataStore.Database
             return Format(format, arg);
         }
 
-        public static readonly string[] StringComparisonOperators = new[] { "equals", "startsWith", "endsWith", "contains" };
+        private static readonly string[] StringComparisonOperators = new[] { "equals", "startsWith", "endsWith", "contains" };
 
         /// <summary>
         /// Formats the string into a sql formatted one

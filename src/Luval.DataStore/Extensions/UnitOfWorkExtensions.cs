@@ -190,6 +190,7 @@ namespace Luval.DataStore.Extensions
         /// <param name="uow">Unit of Work to use</param>
         /// <param name="entity">The entity data to persist</param>
         /// <param name="filterExpression">Expression used to identify if the record already exists in the <see cref="IDataStore"/></param>
+        /// <param name="cancellationToken">Operation cancellation notification token</param>
         /// <returns>A <see cref="Task{TResult}"/> with the affected records</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
@@ -217,6 +218,7 @@ namespace Luval.DataStore.Extensions
         /// <param name="uow">Unit of Work to use</param>
         /// <param name="entities">The collection of entities to persist</param>
         /// <param name="filterExpression">Expression used to identify if the record already exists in the <see cref="IDataStore"/></param>
+        /// <param name="cancellationToken">Operation cancellation notification token</param>
         /// <returns>A <see cref="Task{TResult}"/> with the affected records</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
@@ -246,6 +248,7 @@ namespace Luval.DataStore.Extensions
         /// Adds or updates the audit based entity to the <see cref="IDataEntityCollection{TEntity}"/> and saves to the target <see cref="IDataStore"/>
         /// </summary>
         /// <typeparam name="TEntity">The data entity <see cref="Type"/></typeparam>
+        /// <typeparam name="TKey">The entity Id <see cref="Type"/></typeparam>
         /// <param name="uow">Unit of Work to use</param>
         /// <param name="entity">The entity data to persist</param>
         /// <param name="userId">The user Id that is affecting the entity</param>
@@ -284,6 +287,7 @@ namespace Luval.DataStore.Extensions
         /// Adds or updates the audit based entity to the <see cref="IDataEntityCollection{TEntity}"/> and saves to the target <see cref="IDataStore"/>
         /// </summary>
         /// <typeparam name="TEntity">The data entity <see cref="Type"/></typeparam>
+        /// <typeparam name="TKey">The entity Id <see cref="Type"/></typeparam>
         /// <param name="uow">Unit of Work to use</param>
         /// <param name="entities">The collection of entities to persist</param>
         /// <param name="userId">The user Id that is affecting the entity</param>
@@ -327,9 +331,12 @@ namespace Luval.DataStore.Extensions
         /// Adds or updates the audit based entity to the <see cref="IDataEntityCollection{TEntity}"/> and saves to the target <see cref="IDataStore"/>
         /// </summary>
         /// <typeparam name="TEntity">The data entity <see cref="Type"/></typeparam>
+        /// <typeparam name="TKey">The entity Id <see cref="Type"/></typeparam>
         /// <param name="uow">Unit of Work to use</param>
         /// <param name="entity">The entity data to persist</param>
         /// <param name="filterExpression">Expression used to identify if the record already exists in the <see cref="IDataStore"/></param>
+        /// <param name="userId">The user Id that is affecting the entity</param>
+        /// <param name="cancellationToken">Operation cancellation notification token</param>
         /// <returns>A <see cref="Task{TResult}"/> with the affected records</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
@@ -364,9 +371,12 @@ namespace Luval.DataStore.Extensions
         /// Adds or updates the audit based entity to the <see cref="IDataEntityCollection{TEntity}"/> and saves to the target <see cref="IDataStore"/>
         /// </summary>
         /// <typeparam name="TEntity">The data entity <see cref="Type"/></typeparam>
+        /// <typeparam name="TKey">The entity Id <see cref="Type"/></typeparam>
         /// <param name="uow">Unit of Work to use</param>
         /// <param name="entities">The collection of entities to persist</param>
         /// <param name="filterExpression">Expression used to identify if the record already exists in the <see cref="IDataStore"/></param>
+        /// <param name="cancellationToken">Operation cancellation notification token</param>
+        /// <param name="userId">The user Id that is affecting the entity</param>
         /// <returns>A <see cref="Task{TResult}"/> with the affected records</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>

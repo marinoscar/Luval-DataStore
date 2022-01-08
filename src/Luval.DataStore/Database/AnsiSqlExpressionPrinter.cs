@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore.Database
 {
+    /// <summary>
+    /// Provides an implementation to create Sql statements from Lambda expressions
+    /// </summary>
     public class AnsiSqlExpressionPrinter : ExpressionVisitor, ISqlExpressionPrinter
     {
         private StringBuilder sb;
@@ -41,6 +44,7 @@ namespace Luval.DataStore.Database
             return e;
         }
 
+        /// <inheritdoc/>
         protected override Expression VisitMethodCall(MethodCallExpression m)
         {
             if (m.Method.DeclaringType == typeof(Queryable) && m.Method.Name == "Where")
@@ -54,6 +58,7 @@ namespace Luval.DataStore.Database
             throw new NotSupportedException(string.Format("The method '{0}' is not supported", m.Method.Name));
         }
 
+        /// <inheritdoc/>
         protected override Expression VisitUnary(UnaryExpression u)
         {
             switch (u.NodeType)
@@ -72,11 +77,7 @@ namespace Luval.DataStore.Database
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="b"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         protected override Expression VisitBinary(BinaryExpression b)
         {
             sb.Append("(");
@@ -147,7 +148,7 @@ namespace Luval.DataStore.Database
             sb.Append(")");
             return b;
         }
-
+        /// <inheritdoc/>
         protected override Expression VisitConstant(ConstantExpression c)
         {
             IQueryable q = c.Value as IQueryable;
@@ -163,7 +164,7 @@ namespace Luval.DataStore.Database
 
             return c;
         }
-
+        /// <inheritdoc/>
         protected override Expression VisitMember(MemberExpression m)
         {
             if (m.Expression != null && m.Expression.NodeType == ExpressionType.Parameter)
@@ -173,7 +174,7 @@ namespace Luval.DataStore.Database
             }
             throw new NotSupportedException(string.Format("The member '{0}' is not supported", m.Member.Name));
         }
-
+        /// <inheritdoc/>
         protected bool IsNullConstant(Expression exp)
         {
             return (exp.NodeType == ExpressionType.Constant && ((ConstantExpression)exp).Value == null);

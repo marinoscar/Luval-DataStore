@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore.Database
 {
+    /// <inheritdoc/>
     public class AnsiSqlCommandProviderFactory : IDataCommandProviderFactory
     {
         private readonly IDataRecordMapper _dataRecordMapper;

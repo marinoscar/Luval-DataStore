@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore
 {
+    /// <summary>
+    /// Provides an implementation to create new instances of <see cref="IDataCommandProvider{TEntity}"/>
+    /// </summary>
     public interface IDataCommandProviderFactory
     {
         /// <summary>

@@ -14,7 +14,7 @@ namespace Luval.DataStore.Extensions
     /// </summary>
     public static class StringExtensions
     {
-        public static readonly Char[] SqlLikeChars = new[] { '%', '_', '[', ']' };
+        private static readonly Char[] SqlLikeChars = new[] { '%', '_', '[', ']' };
 
 
         /// <summary>

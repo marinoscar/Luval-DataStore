@@ -85,10 +85,10 @@ namespace Luval.DataStore.Database
 
 
         /// <summary>
-        /// Gets the <see cref="Luval.Data.Sql.TableName"/> from the entity <see cref="Type"/> metadata
+        /// Gets the <see cref="TableName"/> from the entity <see cref="Type"/> metadata
         /// </summary>
         /// <param name="type">The entity <see cref="Type"/> to extract the metadata</param>
-        /// <returns>An instance of <see cref="Luval.Data.Sql.TableName"/></returns>
+        /// <returns>An instance of <see cref="TableName"/></returns>
         public static TableName GetTableName(Type type)
         {
             var att = type.GetCustomAttribute<TableNameAttribute>();

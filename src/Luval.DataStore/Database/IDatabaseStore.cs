@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore.Database
 {
+    /// <inheritdoc/>
     public interface IDatabaseStore : IDataStore
     {
         #region Async Methods
@@ -17,7 +18,7 @@ namespace Luval.DataStore.Database
         /// </summary>
         /// <param name="command">The <see cref="string"/> with the instructions to execute</param>
         /// <param name="cancelationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
-        /// <returns>A <see cref="Task{int}"/> operation with the number of affected records </returns>
+        /// <returns>A <see cref="Task{TResult}"/> operation with the number of affected records </returns>
         Task<int> ExecuteAsync(string command, CancellationToken cancelationToken);
 
         /// <summary>
@@ -42,7 +43,7 @@ namespace Luval.DataStore.Database
         /// </summary>
         /// <param name="command">The <see cref="string"/> with the instructions to execute</param>
         /// <param name="cancelationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
-        /// <returns>A <see cref="Task{IEnumerable{IDataRecord}}"/> operation with the records from the <see cref="IDataStore"/> </returns>
+        /// <returns>A <see cref="Task{TResult}"/> operation with the records from the <see cref="IDataStore"/> </returns>
         Task<IEnumerable<IDataRecord>> ExecuteToDataRecordAsync(string command, CancellationToken cancelationToken);
 
         /// <summary>
@@ -58,7 +59,7 @@ namespace Luval.DataStore.Database
         /// </summary>
         /// <param name="command">The <see cref="string"/> with the instructions to execute</param>
         /// <param name="cancelationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
-        /// <returns>A <see cref="Task{IEnumerable{T}}"/> operation with the data entities from the <see cref="IDataStore"/> </returns>
+        /// <returns>A <see cref="Task{TResult}"/> operation with the data entities from the <see cref="IDataStore"/> </returns>
         Task<IEnumerable<TEntity>> ExecuteToEntityListAsync<TEntity>(string command, CancellationToken cancelationToken);
 
         /// <summary>
@@ -66,7 +67,7 @@ namespace Luval.DataStore.Database
         /// </summary>
         /// <param name="command">The <see cref="string"/> with the instructions to execute</param>
         /// <param name="cancelationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
-        /// <returns>A <see cref="Task{DataSet}"/> operation with the rows from the <see cref="IDataStore"/> </returns>
+        /// <returns>A <see cref="Task{TResult}"/> operation with the rows from the <see cref="IDataStore"/> </returns>
         Task<DataTable> ExecuteDataTableAsync(string command, CancellationToken cancelationToken);
 
         #endregion
@@ -91,7 +92,7 @@ namespace Luval.DataStore.Database
         /// </summary>
         /// <typeparam name="T">The expected data type or the result</typeparam>
         /// <param name="command">The <see cref="IDataCommand"/> with the instructions to execute</param>
-        /// <returns>A <see cref="T"/> instance with the result of the command</returns>
+        /// <returns>An instance with the result of the command</returns>
         T ExecuteScalar<T>(string command);
 
         /// <summary>

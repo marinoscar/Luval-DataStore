@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore
 {
+    /// <inheritdoc/>
     public abstract class DataStore : IDataStore
     {
         #region Methods

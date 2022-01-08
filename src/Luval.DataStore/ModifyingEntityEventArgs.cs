@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 namespace Luval.DataStore
 {
 
+    /// <inheritdoc/>
     public class ModifyingEntityEventArgs<TEntity> : ModifiedEntityEventArgs<TEntity> where TEntity : class
     {
         /// <summary>
         /// Creates a new instance
         /// </summary>
-        /// <param name="entity">The <see cref="TEntity"/> data</param>
+        /// <param name="entity">The entity data</param>
         public ModifyingEntityEventArgs(TEntity entity) : base(entity)
         {
         }
@@ -23,12 +24,13 @@ namespace Luval.DataStore
         public bool Cancel { get; set; }
     }
 
+    /// <inheritdoc/>
     public class ModifiedEntityEventArgs<TEntity> : EventArgs where TEntity : class
     {
         /// <summary>
         /// Creates a new instance
         /// </summary>
-        /// <param name="entity">The <see cref="TEntity"/> data</param>
+        /// <param name="entity">The entity data</param>
         public ModifiedEntityEventArgs(TEntity entity)
         {
             Entity = entity;

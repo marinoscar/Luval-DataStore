@@ -14,7 +14,7 @@ namespace Luval.DataStore
     {
 
         /// <summary>
-        /// Creates a new instance of <see cref="UnitOfWork"/>
+        /// Creates a new instance of <see cref="UnitOfWork{TEntity}"/>
         /// </summary>
         /// <param name="dataEntityCollection">The <see cref="IDataEntityCollection{TEntity}"/> implementation to use</param>
         public UnitOfWork(IDataEntityCollection<TEntity> dataEntityCollection)
@@ -170,18 +170,4 @@ namespace Luval.DataStore
             eventHandler?.Invoke(this, new ModifiedEntityEventArgs<TEntity>(entity));
         }
     }
-
-    public class UnitOfWork : UnitOfWork<IDictionary<string, object>>
-    {
-        /// <summary>
-        /// Creates a new instance of <see cref="UnitOfWork"/>
-        /// </summary>
-        /// <param name="dataEntityCollection">The <see cref="IDataRecordEntityCollection"/> implementation to use</param>
-        public UnitOfWork(IDataRecordEntityCollection dataEntityCollection): base(dataEntityCollection)
-        {
-
-        }
-    }
-
-
 }

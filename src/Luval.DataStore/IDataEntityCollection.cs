@@ -96,9 +96,4 @@ namespace Luval.DataStore
         /// </summary>
         void Clear();
     }
-
-    public interface IDataRecordEntityCollection : IDataEntityCollection<IDictionary<string, object>>
-    {
-    }
-
 }

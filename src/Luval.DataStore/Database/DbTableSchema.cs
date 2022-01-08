@@ -16,7 +16,7 @@ namespace Luval.DataStore.Database
     public class DbTableSchema
     {
 
-        private static Dictionary<Type, DbTableSchema> _cache = new Dictionary<Type, DbTableSchema>();
+        private static readonly ICacheProvider<Type, DbTableSchema> _cache = new MemoryCacheStore<Type, DbTableSchema>();
 
         /// <summary>
         /// Gets or sets the <see cref="TableName"/> for the <see cref="DbTableSchema"/>
@@ -43,28 +43,29 @@ namespace Luval.DataStore.Database
         /// <returns>A new instance of <see cref="DbTableSchema"/></returns>
         public static DbTableSchema Create(Type type)
         {
-            if (_cache.ContainsKey(type)) return _cache[type];
-            var columns = new List<DbColumnSchema>();
-            var refs = new List<TableReference>();
-            var res = new DbTableSchema() { TableName = GetTableName(type), Columns = columns, References = refs, EntityType = type };
-            _cache[type] = res;
-
-            foreach (var prop in type.GetProperties())
+            return _cache.GetOrAdd(type, () =>
             {
-                if (prop.GetCustomAttribute<NotMappedAttribute>() != null) continue;
-                if (prop.GetCustomAttribute<TableReferenceAttribute>() != null)
+                var columns = new List<DbColumnSchema>();
+                var refs = new List<TableReference>();
+                var res = new DbTableSchema() { TableName = GetTableName(type), Columns = columns, References = refs, EntityType = type };
+
+                foreach (var prop in type.GetProperties())
                 {
-                    var tableRef = TableReference.Create(prop);
-                    ValidateTableRef(tableRef, res);
-                    refs.Add(tableRef);
-                    continue;
+                    if (prop.GetCustomAttribute<NotMappedAttribute>() != null) continue;
+                    if (prop.GetCustomAttribute<TableReferenceAttribute>() != null)
+                    {
+                        var tableRef = TableReference.Create(prop);
+                        ValidateTableRef(tableRef, res);
+                        refs.Add(tableRef);
+                        continue;
+                    }
+                    columns.Add(DbColumnSchema.Create(prop));
                 }
-                columns.Add(DbColumnSchema.Create(prop));
-            }
-            if (!res.Columns.Any(i => i.IsPrimaryKey) && res.Columns.Any(i => i.ColumnName == "Id"))
-                res.Columns.Single(i => i.ColumnName == "Id").IsPrimaryKey = true;
-            
-            return res;
+                if (!res.Columns.Any(i => i.IsPrimaryKey) && res.Columns.Any(i => i.ColumnName == "Id"))
+                    res.Columns.Single(i => i.ColumnName == "Id").IsPrimaryKey = true;
+
+                return res;
+            });
         }
 
         /// <summary>

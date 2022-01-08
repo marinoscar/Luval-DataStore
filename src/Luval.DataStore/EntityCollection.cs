@@ -69,15 +69,15 @@ namespace Luval.DataStore
         }
 
         /// <inheritdoc/>
-        public IEnumerable<TEntity> Query(Expression<Func<TEntity, bool>> whereExpression)
+        public IEnumerable<TEntity> Query(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression, bool descending)
         {
-            return DataStore.ExecuteToEntityList<TEntity>(CommandProvider.Query(whereExpression));
+            return DataStore.ExecuteToEntityList<TEntity>(CommandProvider.Query(filterExpression, orderByExpression, descending));
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> whereExpression, CancellationToken cancellationToken)
+        public Task<IEnumerable<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression, bool descending, CancellationToken cancellationToken)
         {
-            return DataStore.ExecuteToEntityListAsync<TEntity>(CommandProvider.Query(whereExpression), cancellationToken);
+            return DataStore.ExecuteToEntityListAsync<TEntity>(CommandProvider.Query(filterExpression, orderByExpression, descending), cancellationToken);
         }
 
         /// <inheritdoc/>

@@ -13,6 +13,7 @@ namespace Luval.DataStore
     /// <summary>
     /// Represents the implementation of a collection of Data Entities
     /// </summary>
+    /// <typeparam name="TEntity">The <see cref="Type"/> that represents the data entity</typeparam>
     public interface IDataEntityCollection<TEntity> : ICollection where TEntity : class
     {
         /// <summary>
@@ -53,17 +54,21 @@ namespace Luval.DataStore
         /// <summary>
         /// Queries the data store
         /// </summary>
-        /// <param name="command">The command to execute</param>
+        /// <param name="filterExpression">The expression to use to filter the data</param>
+        /// <param name="orderByExpression">The expression to sort the result set, null by default</param>
+        /// <param name="descending">Indetifies if in case the <paramref name="orderByExpression"/> is provided if the order is descending, otherwise is ascending</param>
         /// <returns>A <see cref="IEnumerable{TEntity}"/> with the data</returns>
-        IEnumerable<TEntity> Query(Expression<Func<TEntity, bool>> whereExpression);
+        IEnumerable<TEntity> Query(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression = null, bool descending = false);
 
         /// <summary>
         /// Queries the data store
         /// </summary>
-        /// <param name="command">The command to execute</param>
+        /// <param name="filterExpression">The expression to use to filter the data</param>
+        /// <param name="orderByExpression">The expression to sort the result set, null by default</param>
+        /// <param name="descending">Indetifies if in case the <paramref name="orderByExpression"/> is provided if the order is descending, otherwise is ascending</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
         /// <returns>A <see cref="Task{IEnumerable{TEntity}}"/> with the operation with the data</returns>
-        Task<IEnumerable<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> whereExpression, CancellationToken cancellationToken);
+        Task<IEnumerable<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression, bool descending, CancellationToken cancellationToken);
 
         /// <summary>
         /// Queries the data store

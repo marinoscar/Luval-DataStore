@@ -9,16 +9,27 @@ using System.Threading.Tasks;
 
 namespace Luval.DataStore.Database
 {
-    public class SqlExpressionPrinter : ExpressionVisitor
+    public class AnsiSqlExpressionPrinter : ExpressionVisitor, ISqlExpressionPrinter
     {
         private StringBuilder sb;
 
-        public string Where<T>(Expression<Func<T, bool>> expression)
+        /// <inheritdoc/>
+        public virtual string Where<T>(Expression<Func<T, bool>> expression)
         {
             this.sb = new StringBuilder();
             this.Visit(expression);
             return sb.ToString();
 
+        }
+
+        /// <inheritdoc/>
+        public virtual string OrderBy<TEntity>(Expression<Func<TEntity, object>> orderByExpression, bool descending)
+        {
+            if (orderByExpression == null) return string.Empty;
+            var expression = (UnaryExpression)orderByExpression.Body;
+            var memberExpression = (MemberExpression)expression.Operand;
+            var column = memberExpression.Member.GetName();
+            return "ORDER BY {0} {1}".Fi(column, descending ? "DESC" : "ASC");
         }
 
         private static Expression StripQuotes(Expression e)
@@ -147,31 +158,7 @@ namespace Luval.DataStore.Database
             }
             else if (q == null)
             {
-                switch (Type.GetTypeCode(c.Value.GetType()))
-                {
-                    case TypeCode.Boolean:
-                        sb.Append(((bool)c.Value) ? 1 : 0);
-                        break;
-
-                    case TypeCode.String:
-                        sb.Append("'");
-                        sb.Append(c.Value);
-                        sb.Append("'");
-                        break;
-
-                    case TypeCode.DateTime:
-                        sb.Append("'");
-                        sb.Append(c.Value);
-                        sb.Append("'");
-                        break;
-
-                    case TypeCode.Object:
-                        throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", c.Value));
-
-                    default:
-                        sb.Append(c.Value);
-                        break;
-                }
+                sb.Append(c.Value.ToSql());
             }
 
             return c;

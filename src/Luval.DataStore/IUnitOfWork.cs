@@ -30,5 +30,21 @@ namespace Luval.DataStore
         /// </summary>
         /// <returns>The number of affected records</returns>
         int SaveChanges();
+
+        /// <summary>
+        /// Event is triggered before an entity is inserted to the <see cref="IDataStore"/>
+        /// </summary>
+        event EventHandler<UnitOfWorkEventArgs<TEntity>> InsertingEntity;
+
+        /// <summary>
+        /// Event is triggered before an entity is updated to the <see cref="IDataStore"/>
+        /// </summary>
+        event EventHandler<UnitOfWorkEventArgs<TEntity>> UpdatingEntity;
+
+        /// <summary>
+        /// Event is triggered before an entity is deleted from <see cref="IDataStore"/>
+        /// </summary>
+        event EventHandler<UnitOfWorkEventArgs<TEntity>> DeletingEntity;
+
     }
 }

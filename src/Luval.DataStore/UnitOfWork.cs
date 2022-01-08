@@ -40,6 +40,15 @@ namespace Luval.DataStore
         public IDataCommandProvider<TEntity> CommandProvider { get; private set; }
 
         /// <inheritdoc/>
+        public event EventHandler<UnitOfWorkEventArgs<TEntity>> InsertingEntity;
+
+        /// <inheritdoc/>
+        public event EventHandler<UnitOfWorkEventArgs<TEntity>> UpdatingEntity;
+
+        /// <inheritdoc/>
+        public event EventHandler<UnitOfWorkEventArgs<TEntity>> DeletingEntity;
+
+        /// <inheritdoc/>
         public virtual int SaveChanges()
         {
             var res = 0;
@@ -47,15 +56,21 @@ namespace Luval.DataStore
             {
                 foreach (var insertEnt in Entities.Inserted)
                 {
+                    var arg = OnInserting(insertEnt);
+                    if (arg != null && arg.Cancel) continue;
                     res += DataStore.Execute(CommandProvider.GetInsert(insertEnt));
                 }
-                foreach (var insertEnt in Entities.Updated)
+                foreach (var updateEnt in Entities.Updated)
                 {
-                    res += DataStore.Execute(CommandProvider.GetUpdate(insertEnt));
+                    var arg = OnUpdating(updateEnt);
+                    if (arg != null && arg.Cancel) continue;
+                    res += DataStore.Execute(CommandProvider.GetUpdate(updateEnt));
                 }
-                foreach (var insertEnt in Entities.Deleted)
+                foreach (var deleteEnt in Entities.Deleted)
                 {
-                    res += DataStore.Execute(CommandProvider.GetDelete(insertEnt));
+                    var arg = OnDeleting(deleteEnt);
+                    if (arg != null && arg.Cancel) continue;
+                    res += DataStore.Execute(CommandProvider.GetDelete(deleteEnt));
                 }
             }
             catch (Exception ex)
@@ -69,6 +84,43 @@ namespace Luval.DataStore
         public virtual Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
             return Task.Run(() => { return SaveChanges(); }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Invokes the <seealso cref="IUnitOfWork{TEntity}.InsertingEntity"/> event
+        /// </summary>
+        /// <param name="entity">The entity to insert</param>
+        /// <returns>The instance of the <see cref="UnitOfWorkEventArgs{TEntity}"/> returned by the event</returns>
+        protected virtual UnitOfWorkEventArgs<TEntity> OnInserting(TEntity entity)
+        {
+            return TriggerEvent(entity, InsertingEntity);
+        }
+
+        /// <summary>
+        /// Invokes the <seealso cref="IUnitOfWork{TEntity}.UpdatingEntity"/> event
+        /// </summary>
+        /// <param name="entity">The entity to update</param>
+        /// <returns>The instance of the <see cref="UnitOfWorkEventArgs{TEntity}"/> returned by the event</returns>
+        protected virtual UnitOfWorkEventArgs<TEntity> OnUpdating(TEntity entity)
+        {
+            return TriggerEvent(entity, UpdatingEntity);
+        }
+
+        /// <summary>
+        /// Invokes the <seealso cref="IUnitOfWork{TEntity}.DeletingEntity"/> event
+        /// </summary>
+        /// <param name="entity">The entity to delete</param>
+        /// <returns>The instance of the <see cref="UnitOfWorkEventArgs{TEntity}"/> returned by the event</returns>
+        protected virtual UnitOfWorkEventArgs<TEntity> OnDeleting(TEntity entity)
+        {
+            return TriggerEvent(entity, DeletingEntity);
+        }
+
+        private UnitOfWorkEventArgs<TEntity> TriggerEvent(TEntity entity, EventHandler<UnitOfWorkEventArgs<TEntity>> eventHandler)
+        {
+            var args = new UnitOfWorkEventArgs<TEntity>(entity);
+            eventHandler?.Invoke(this, args);
+            return args;
         }
     }
 

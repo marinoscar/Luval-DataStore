@@ -15,7 +15,7 @@ namespace Luval.DataStore.xTests
         [Fact]
         public void It_Should_Generate_A_Valid_Where_Statement_With_String_Constant_Comparison()
         {
-            var printer = new SqlExpressionPrinter();
+            var printer = new AnsiSqlExpressionPrinter();
             Expression<Func<Entity, bool>> expression = (i => i.Name == "Oscar");
             var sql = printer.Where(expression);
             Assert.True(sql == "(Name = 'Oscar')");
@@ -24,7 +24,7 @@ namespace Luval.DataStore.xTests
         [Fact]
         public void It_Should_Generate_A_Valid_Where_Statement_With_String_Multiple_Constant_Comparison()
         {
-            var printer = new SqlExpressionPrinter();
+            var printer = new AnsiSqlExpressionPrinter();
             Expression<Func<Entity, bool>> expression = (i => i.Name == "Oscar" && i.Id == "25" || i.Id == "30");
             var sql = printer.Where(expression);
             Assert.True(sql == "(((Name = 'Oscar') AND (Id = '25')) OR (Id = '30'))");
@@ -33,7 +33,7 @@ namespace Luval.DataStore.xTests
         [Fact]
         public void It_Should_Generate_A_Valid_Where_Statement_With_Annotated_Column()
         {
-            var printer = new SqlExpressionPrinter();
+            var printer = new AnsiSqlExpressionPrinter();
             Expression<Func<Entity, bool>> expression = (i => i.Salary == 15d);
             var sql = printer.Where(expression);
             Assert.True(sql == "(SalaryColumn = 15)");

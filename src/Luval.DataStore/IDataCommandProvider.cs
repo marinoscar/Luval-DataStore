@@ -36,9 +36,11 @@ namespace Luval.DataStore
         /// <summary>
         /// Gets a query command
         /// </summary>
-        /// <param name="expression">The query expression to use to extract the data from the <see cref="IDataStore"/></param>
+        /// <param name="filterExpression">The query expression to use to extract the data from the <see cref="IDataStore"/></param>
+        /// <param name="orderByExpression">The expression to sort the result set, null by default</param>
+        /// <param name="descending">Indetifies if in case the <paramref name="orderByExpression"/> is provided if the order is descending, otherwise is ascending</param>
         /// <returns></returns>
-        IDataCommand Query(Expression<Func<TEntity, bool>> expression);
+        IDataCommand Query(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression = null, bool descending = false);
     }
 
     /// <inheritdoc/>

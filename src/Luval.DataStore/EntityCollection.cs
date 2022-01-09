@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -64,25 +65,25 @@ namespace Luval.DataStore
         }
 
         /// <inheritdoc/>
-        public IEnumerable<TEntity> Query(IDataCommand command)
+        public IEnumerable<IDataRecord> Query(IDataCommand command)
         {
-            return DataStore.ExecuteToEntityList<TEntity>(command);
+            return DataStore.ExecuteToDataRecord(command);
         }
 
         /// <inheritdoc/>
-        public IEnumerable<TEntity> Query(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression, bool descending)
+        public IEnumerable<TEntity> Query(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression, bool? descending)
         {
-            return DataStore.ExecuteToEntityList<TEntity>(CommandProvider.Query(filterExpression, orderByExpression, descending));
+            return DataStore.ExecuteToEntityList<TEntity>(CommandProvider.Query(filterExpression, orderByExpression, descending?? false));
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression, bool descending, CancellationToken cancellationToken)
+        public Task<IEnumerable<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression, bool? descending, CancellationToken cancellationToken)
         {
-            return DataStore.ExecuteToEntityListAsync<TEntity>(CommandProvider.Query(filterExpression, orderByExpression, descending), cancellationToken);
+            return DataStore.ExecuteToEntityListAsync<TEntity>(CommandProvider.Query(filterExpression, orderByExpression, descending?? false), cancellationToken);
         }
 
         /// <inheritdoc/>
-        public Task<IEnumerable<TEntity>> QueryAsync(IDataCommand command, CancellationToken cancellationToken)
+        public Task<IEnumerable<IDataRecord>> QueryAsync(IDataCommand command, CancellationToken cancellationToken)
         {
             return Task.Run(() => Query(command), cancellationToken);
         }

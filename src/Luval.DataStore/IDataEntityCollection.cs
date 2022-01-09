@@ -49,7 +49,7 @@ namespace Luval.DataStore
         /// </summary>
         /// <param name="command">The command to execute</param>
         /// <returns>A <see cref="IEnumerable{TEntity}"/> with the data</returns>
-        IEnumerable<TEntity> Query(IDataCommand command);
+        IEnumerable<IDataRecord> Query(IDataCommand command);
 
         /// <summary>
         /// Queries the data store
@@ -58,7 +58,7 @@ namespace Luval.DataStore
         /// <param name="orderByExpression">The expression to sort the result set, null by default</param>
         /// <param name="descending">Indetifies if in case the <paramref name="orderByExpression"/> is provided if the order is descending, otherwise is ascending</param>
         /// <returns>A <see cref="IEnumerable{TEntity}"/> with the data</returns>
-        IEnumerable<TEntity> Query(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression = null, bool descending = false);
+        IEnumerable<TEntity> Query(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression = null, bool? descending = false);
 
         /// <summary>
         /// Queries the data store
@@ -68,7 +68,7 @@ namespace Luval.DataStore
         /// <param name="descending">Indetifies if in case the <paramref name="orderByExpression"/> is provided if the order is descending, otherwise is ascending</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
         /// <returns>A <see cref="Task{TResult}"/> with the operation with the data</returns>
-        Task<IEnumerable<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression, bool descending, CancellationToken cancellationToken);
+        Task<IEnumerable<TEntity>> QueryAsync(Expression<Func<TEntity, bool>> filterExpression, Expression<Func<TEntity, object>> orderByExpression, bool? descending, CancellationToken cancellationToken);
 
         /// <summary>
         /// Queries the data store
@@ -76,7 +76,7 @@ namespace Luval.DataStore
         /// <param name="command">The command to execute</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to use to cancel the operation</param>
         /// <returns>A <see cref="Task{TResult}"/> with the operation with the data</returns>
-        Task<IEnumerable<TEntity>> QueryAsync(IDataCommand command, CancellationToken cancellationToken);
+        Task<IEnumerable<IDataRecord>> QueryAsync(IDataCommand command, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets the entities that have been inserted in memory to the collection

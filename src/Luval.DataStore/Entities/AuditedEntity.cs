@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Luval.DataStore.Entities
 {
     /// <inheritdoc/>
-    public class AuditedEntity<TKey> : IAuditedEntity<TKey>
+    public class AuditedEntity<TKey> : IIdAuditedEntity<TKey>
     {
         /// <inheritdoc/>
         [PrimaryKey]

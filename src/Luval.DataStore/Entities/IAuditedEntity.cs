@@ -9,19 +9,25 @@ namespace Luval.DataStore.Entities
     /// <summary>
     /// Provides an implementation for an entity that has properties to audit when and who created or updated a record
     /// </summary>
-    public interface IAuditedEntity<TKey> : IIdEntity<TKey>, IEntityCreatedAudit, IEntityUpdatedAudit 
+    public interface IAuditedEntity : IEntityCreatedAudit, IEntityUpdatedAudit 
     {
     }
 
     /// <inheritdoc/>
-    public interface IStringAuditedEntity : IAuditedEntity<string>
+    public interface IStringAuditedEntity : IAuditedEntity
     {
 
     }
 
     /// <inheritdoc/>
-    public interface INumericAusitedEntity : IAuditedEntity<long>
+    public interface INumericAusitedEntity : IAuditedEntity
     {
 
+    }
+
+    /// <inheritdoc/>
+    public interface IIdAuditedEntity<TKey> : IIdEntity<TKey>, IAuditedEntity 
+    {
+        
     }
 }

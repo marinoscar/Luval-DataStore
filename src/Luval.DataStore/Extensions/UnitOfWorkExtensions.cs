@@ -139,19 +139,7 @@ namespace Luval.DataStore.Extensions
         /// <exception cref="InvalidOperationException"></exception>
         public static int AddOrUpdateAndSave<TEntity>(this IUnitOfWork<TEntity> uow, TEntity entity, Expression<Func<TEntity, bool>> filterExpression) where TEntity : class
         {
-            if (uow == null) throw new ArgumentNullException(nameof(uow));
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            var entries = uow.Entities.Query(filterExpression);
-            if (entries != null && entries.Any())
-            {
-                if (entries.Count() > 1) throw new InvalidOperationException(string.Format("{0} contains more than one record", nameof(filterExpression)));
-                uow.Entities.Update(entity);
-            }
-            else
-            {
-                uow.Entities.Insert(entity);
-            }
-            return uow.SaveChanges();
+            return AddOrUpdateAndSaveAsync(uow, new[] { entity }, filterExpression, CancellationToken.None).Result;
         }
 
         /// <summary>
@@ -166,24 +154,7 @@ namespace Luval.DataStore.Extensions
         /// <exception cref="InvalidOperationException"></exception>
         public static int AddOrUpdateAndSave<TEntity>(this IUnitOfWork<TEntity> uow, IEnumerable<TEntity> entities, Expression<Func<TEntity, bool>> filterExpression) where TEntity : class
         {
-            if (uow == null) throw new ArgumentNullException(nameof(uow));
-            if (entities == null) throw new ArgumentNullException(nameof(entities));
-
-            foreach (var entity in entities)
-            {
-                var entries = uow.Entities.Query(filterExpression);
-                if (entries != null && entries.Any())
-                {
-                    if (entries.Count() > 1) throw new InvalidOperationException(string.Format("{0} contains more than one record", nameof(filterExpression)));
-                    uow.Entities.Update(entity);
-                }
-                else
-                {
-                    uow.Entities.Insert(entity);
-                }
-            }
-
-            return uow.SaveChanges();
+            return AddOrUpdateAndSaveAsync(uow, entities, filterExpression, CancellationToken.None).Result;
         }
 
         /// <summary>
@@ -197,21 +168,9 @@ namespace Luval.DataStore.Extensions
         /// <returns>A <see cref="Task{TResult}"/> with the affected records</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public static async Task<int> AddOrUpdateAndSaveAsync<TEntity>(this IUnitOfWork<TEntity> uow, TEntity entity, Expression<Func<TEntity, bool>> filterExpression, CancellationToken cancellationToken) where TEntity : class
+        public static Task<int> AddOrUpdateAndSaveAsync<TEntity>(this IUnitOfWork<TEntity> uow, TEntity entity, Expression<Func<TEntity, bool>> filterExpression, CancellationToken cancellationToken) where TEntity : class
         {
-            if (uow == null) throw new ArgumentNullException(nameof(uow));
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            var entries = await uow.Entities.QueryAsync(filterExpression, null, false, cancellationToken);
-            if (entries != null && entries.Any())
-            {
-                if (entries.Count() > 1) throw new InvalidOperationException(string.Format("{0} contains more than one record", nameof(filterExpression)));
-                uow.Entities.Update(entity);
-            }
-            else
-            {
-                uow.Entities.Insert(entity);
-            }
-            return await uow.SaveChangesAsync(cancellationToken);
+            return AddOrUpdateAndSaveAsync(uow, new[] { entity }, filterExpression, cancellationToken);
         }
 
         /// <summary>
@@ -232,7 +191,7 @@ namespace Luval.DataStore.Extensions
 
             foreach (var entity in entities)
             {
-                var entries = await uow.Entities.QueryAsync(filterExpression, null, false, cancellationToken);
+                var entries = await uow.Entities.QueryAsync(filterExpression, null, null, cancellationToken);
                 if (entries != null && entries.Any())
                 {
                     if (entries.Count() > 1) throw new InvalidOperationException(string.Format("{0} contains more than one record", nameof(filterExpression)));
@@ -245,13 +204,14 @@ namespace Luval.DataStore.Extensions
             }
 
             return await uow.SaveChangesAsync(cancellationToken);
-        } 
+        }
         #endregion
 
         /// <summary>
         /// Adds or updates the audit based entity to the <see cref="IDataEntityCollection{TEntity}"/> and saves to the target <see cref="IDataStore"/>
         /// </summary>
         /// <typeparam name="TEntity">The data entity <see cref="Type"/></typeparam>
+        /// <typeparam name="TKey">The type Id propery of the entity</typeparam>
         /// <param name="uow">Unit of Work to use</param>
         /// <param name="entity">The entity data to persist</param>
         /// <param name="userId">The user Id that is affecting the entity</param>
@@ -259,36 +219,16 @@ namespace Luval.DataStore.Extensions
         /// <returns>Number of affected records</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public static int AddOrUpdateAndSave<TEntity>(this IUnitOfWork<TEntity> uow, TEntity entity, string userId, Expression<Func<TEntity, bool>> filterExpression) where TEntity : class, IAuditedEntity
+        public static int AddOrUpdateAndSave<TEntity, TKey>(this IUnitOfWork<TEntity> uow, TEntity entity, string userId, Expression<Func<TEntity, bool>> filterExpression) where TEntity : class, IIdAuditedEntity<TKey>
         {
-            if (uow == null) throw new ArgumentNullException(nameof(uow));
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            var entries = uow.Entities.Query(filterExpression);
-            if (entries != null && entries.Any())
-            {
-                if (entries.Count() > 1) throw new InvalidOperationException(string.Format("{0} contains more than one record", nameof(filterExpression)));
-
-                entity.UtcUpdatedOn = DateTime.UtcNow;
-                entity.UpdatedByUserId = userId;
-
-                uow.Entities.Update(entity);
-            }
-            else
-            {
-                entity.UtcCreatedOn = DateTime.UtcNow;
-                entity.CreatedByUserId = userId;
-                entity.UtcUpdatedOn = DateTime.UtcNow;
-                entity.UpdatedByUserId = userId;
-
-                uow.Entities.Insert(entity);
-            }
-            return uow.SaveChanges();
+            return AddOrUpdateAndSave<TEntity, TKey>(uow, new[] { entity }, userId, filterExpression);
         }
 
         /// <summary>
         /// Adds or updates the audit based entity to the <see cref="IDataEntityCollection{TEntity}"/> and saves to the target <see cref="IDataStore"/>
         /// </summary>
         /// <typeparam name="TEntity">The data entity <see cref="Type"/></typeparam>
+        /// <typeparam name="TKey">The type Id propery of the entity</typeparam>
         /// <param name="uow">Unit of Work to use</param>
         /// <param name="entities">The collection of entities to persist</param>
         /// <param name="userId">The user Id that is affecting the entity</param>
@@ -296,41 +236,16 @@ namespace Luval.DataStore.Extensions
         /// <returns>Number of affected records</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public static int AddOrUpdateAndSave<TEntity>(this IUnitOfWork<TEntity> uow, IEnumerable<TEntity> entities, string userId, Expression<Func<TEntity, bool>> filterExpression) where TEntity : class, IAuditedEntity
+        public static int AddOrUpdateAndSave<TEntity, TKey>(this IUnitOfWork<TEntity> uow, IEnumerable<TEntity> entities, string userId, Expression<Func<TEntity, bool>> filterExpression) where TEntity : class, IIdAuditedEntity<TKey>
         {
-            if (uow == null) throw new ArgumentNullException(nameof(uow));
-            if (entities == null) throw new ArgumentNullException(nameof(entities));
-
-            foreach (var entity in entities)
-            {
-                var entries = uow.Entities.Query(filterExpression);
-                if (entries != null && entries.Any())
-                {
-                    if (entries.Count() > 1) throw new InvalidOperationException(string.Format("{0} contains more than one record", nameof(filterExpression)));
-
-                    entity.UtcUpdatedOn = DateTime.UtcNow;
-                    entity.UpdatedByUserId = userId;
-
-                    uow.Entities.Update(entity);
-                }
-                else
-                {
-                    entity.UtcCreatedOn = DateTime.UtcNow;
-                    entity.CreatedByUserId = userId;
-                    entity.UtcUpdatedOn = DateTime.UtcNow;
-                    entity.UpdatedByUserId = userId;
-
-                    uow.Entities.Insert(entity);
-                }
-            }
-
-            return uow.SaveChanges();
+            return AddOrUpdateAndSaveAsync<TEntity, TKey>(uow, entities, userId, filterExpression, CancellationToken.None).Result;
         }
 
         /// <summary>
         /// Adds or updates the audit based entity to the <see cref="IDataEntityCollection{TEntity}"/> and saves to the target <see cref="IDataStore"/>
         /// </summary>
         /// <typeparam name="TEntity">The data entity <see cref="Type"/></typeparam>
+        /// <typeparam name="TKey">The type Id propery of the entity</typeparam>
         /// <param name="uow">Unit of Work to use</param>
         /// <param name="entity">The entity data to persist</param>
         /// <param name="filterExpression">Expression used to identify if the record already exists in the <see cref="IDataStore"/></param>
@@ -339,36 +254,16 @@ namespace Luval.DataStore.Extensions
         /// <returns>A <see cref="Task{TResult}"/> with the affected records</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public static async Task<int> AddOrUpdateAndSaveAsync<TEntity>(this IUnitOfWork<TEntity> uow, TEntity entity, string userId, Expression<Func<TEntity, bool>> filterExpression, CancellationToken cancellationToken) where TEntity : class, IAuditedEntity
+        public static Task<int> AddOrUpdateAndSaveAsync<TEntity, TKey>(this IUnitOfWork<TEntity> uow, TEntity entity, string userId, Expression<Func<TEntity, bool>> filterExpression, CancellationToken cancellationToken) where TEntity : class, IIdAuditedEntity<TKey>
         {
-            if (uow == null) throw new ArgumentNullException(nameof(uow));
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            var entries = await uow.Entities.QueryAsync(filterExpression, null, false, cancellationToken);
-            if (entries != null && entries.Any())
-            {
-                if (entries.Count() > 1) throw new InvalidOperationException(string.Format("{0} contains more than one record", nameof(filterExpression)));
-
-                entity.UtcUpdatedOn = DateTime.UtcNow;
-                entity.UpdatedByUserId = userId;
-
-                uow.Entities.Update(entity);
-            }
-            else
-            {
-                entity.UtcCreatedOn = DateTime.UtcNow;
-                entity.CreatedByUserId = userId;
-                entity.UtcUpdatedOn = DateTime.UtcNow;
-                entity.UpdatedByUserId = userId;
-
-                uow.Entities.Insert(entity);
-            }
-            return await uow.SaveChangesAsync(cancellationToken);
+            return AddOrUpdateAndSaveAsync<TEntity, TKey>(uow, new[] { entity }, userId, filterExpression, cancellationToken);
         }
 
         /// <summary>
         /// Adds or updates the audit based entity to the <see cref="IDataEntityCollection{TEntity}"/> and saves to the target <see cref="IDataStore"/>
         /// </summary>
         /// <typeparam name="TEntity">The data entity <see cref="Type"/></typeparam>
+        /// <typeparam name="TKey">The type Id propery of the entity</typeparam>
         /// <param name="uow">Unit of Work to use</param>
         /// <param name="entities">The collection of entities to persist</param>
         /// <param name="filterExpression">Expression used to identify if the record already exists in the <see cref="IDataStore"/></param>
@@ -377,18 +272,21 @@ namespace Luval.DataStore.Extensions
         /// <returns>A <see cref="Task{TResult}"/> with the affected records</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public static async Task<int> AddOrUpdateAndSaveAsync<TEntity>(this IUnitOfWork<TEntity> uow, IEnumerable<TEntity> entities, string userId, Expression<Func<TEntity, bool>> filterExpression, CancellationToken cancellationToken) where TEntity : class, IAuditedEntity
+        public static async Task<int> AddOrUpdateAndSaveAsync<TEntity, TKey>(this IUnitOfWork<TEntity> uow, IEnumerable<TEntity> entities, string userId, Expression<Func<TEntity, bool>> filterExpression, CancellationToken cancellationToken) where TEntity : class, IIdAuditedEntity<TKey>
         {
             if (uow == null) throw new ArgumentNullException(nameof(uow));
             if (entities == null) throw new ArgumentNullException(nameof(entities));
 
             foreach (var entity in entities)
             {
-                var entries = await uow.Entities.QueryAsync(filterExpression, null, false, cancellationToken);
+                var entries = await uow.Entities.QueryAsync(filterExpression, null, null, cancellationToken);
                 if (entries != null && entries.Any())
                 {
                     if (entries.Count() > 1) throw new InvalidOperationException(string.Format("{0} contains more than one record", nameof(filterExpression)));
-
+                    var originalEntry = entries.First();
+                    entity.Id = originalEntry.Id;
+                    entity.CreatedByUserId = originalEntry.CreatedByUserId;
+                    entity.UtcCreatedOn = originalEntry.UtcCreatedOn;
                     entity.UtcUpdatedOn = DateTime.UtcNow;
                     entity.UpdatedByUserId = userId;
 

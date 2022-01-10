@@ -248,6 +248,7 @@ namespace Luval.DataStore.Database
                         {
                             try
                             {
+                                PrepareCommand(cmd, conn, tran, command);
                                 runCommand(cmd);
                                 WorkTransaction(tran, () => { tran.Commit(); });
                             }
@@ -297,6 +298,14 @@ namespace Luval.DataStore.Database
             for (int i = 0; i < record.FieldCount; i++)
                 row[record.GetName(i)] = record.GetValue(i);
             return row;
+        }
+
+        private void PrepareCommand(IDbCommand cmd, IDbConnection cnn, IDbTransaction tran, IDataCommand command)
+        {
+            cmd.Transaction = tran;
+            cmd.CommandText = Convert.ToString(command.Get());
+            cmd.CommandTimeout = _sqlCmdFactory.Options.CommandTimeout ?? cnn.ConnectionTimeout;
+            cmd.CommandType = _sqlCmdFactory.Options.CommandType;
         }
 
         #endregion

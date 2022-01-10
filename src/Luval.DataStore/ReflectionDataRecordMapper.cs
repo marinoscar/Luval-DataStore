@@ -132,7 +132,7 @@ namespace Luval.DataStore
                     };
                     var colAtt = property.GetCustomAttribute<ColumnNameAttribute>();
                     field.DataFieldName = colAtt != null ? colAtt.Name : property.Name;
-                    if (!field.IsPrimitive)
+                    if (!field.IsPrimitive && field.IsMapped)
                     {
                         field.IsList = typeof(IEnumerable).IsAssignableFrom(property.PropertyType);
                         field.TableReference = TableReference.Create(property);

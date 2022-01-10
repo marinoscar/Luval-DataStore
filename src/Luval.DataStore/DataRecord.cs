@@ -39,6 +39,7 @@ namespace Luval.DataStore
         /// <param name="dataRecord">A <see cref="IDataRecord"/> to load the data from</param>
         public DataRecord(IDataRecord dataRecord) : base()
         {
+            _record = new Dictionary<string, object>();
             for (int i = 0; i < dataRecord.FieldCount; i++)
             {
                 _record[dataRecord.GetName(i)] = dataRecord.GetValue(i);

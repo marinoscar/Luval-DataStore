@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31911.196
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Luval.DataStore", "Luval.DataStore.csproj", "{56E19F46-787A-4AA7-A82B-323CDD418EF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Luval.DataStore", "Luval.DataStore.csproj", "{56E19F46-787A-4AA7-A82B-323CDD418EF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Luval.DataStore.xTests", "..\Luval.DataStore.xTests\Luval.DataStore.xTests.csproj", "{9136E1D0-0E06-4B8C-B05B-AA98C279DA45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Luval.DataStore.xTests", "..\Luval.DataStore.xTests\Luval.DataStore.xTests.csproj", "{9136E1D0-0E06-4B8C-B05B-AA98C279DA45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Luval.DataStore.Sqlite", "..\Luval.DataStore.Sqlite\Luval.DataStore.Sqlite.csproj", "{9BF06582-7E6E-4FDE-BB5A-07AC77C58F25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{9136E1D0-0E06-4B8C-B05B-AA98C279DA45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9136E1D0-0E06-4B8C-B05B-AA98C279DA45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9136E1D0-0E06-4B8C-B05B-AA98C279DA45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BF06582-7E6E-4FDE-BB5A-07AC77C58F25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BF06582-7E6E-4FDE-BB5A-07AC77C58F25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BF06582-7E6E-4FDE-BB5A-07AC77C58F25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BF06582-7E6E-4FDE-BB5A-07AC77C58F25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>luval-128x128.ico</ApplicationIcon>
+    <Title>Luval Data Store Sqlite</Title>
+    <Version>1.2.2</Version>
+    <Authors>Oscar Marin</Authors>
+    <Copyright>Oscar Marin</Copyright>
+    <PackageProjectUrl>https://github.com/marinoscar/Luval-DataStore</PackageProjectUrl>
+    <PackageIcon>LV-Luval-Logo-200x200.png</PackageIcon>
+    <RepositoryUrl>https://github.com/marinoscar/Luval-DataStore</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <AssemblyVersion>1.2.2.3</AssemblyVersion>
+    <FileVersion>1.2.2.3</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="luval-128x128.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\Marin\code\img\LV-Luval-Logo-200x200.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Luval.DataStore" Version="1.2.2" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.116" />
+  </ItemGroup>
+
+</Project>

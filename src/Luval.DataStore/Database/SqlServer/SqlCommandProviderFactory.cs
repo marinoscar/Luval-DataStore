@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace Luval.DataStore.Database.SqlServer
 {
     /// <inheritdoc/>
-    public class SqlCommandProviderFactory : AnsiSqlCommandProviderFactory
+    public class SqlCommandProviderFactory : BaseSqlCommandProviderFactory
     {
         /// <inheritdoc/>
-        public SqlCommandProviderFactory() : base(new ReflectionDataRecordMapper())
+        public SqlCommandProviderFactory() : this(new ReflectionDataRecordMapper())
         {
 
         }
@@ -19,6 +19,12 @@ namespace Luval.DataStore.Database.SqlServer
         public SqlCommandProviderFactory(IDataRecordMapper dataRecordMapper) : base(dataRecordMapper)
         {
 
+        }
+
+        /// <inheritdoc/>
+        public override IDataCommandProvider<TEntity> Create<TEntity>() where TEntity : class
+        {
+            return new SqlCommandProvider<TEntity>(this.RecordMapper);
         }
     }
 }

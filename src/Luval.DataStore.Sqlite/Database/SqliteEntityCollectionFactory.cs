@@ -14,7 +14,7 @@ namespace Luval.DataStore.Database.Sqlite
         /// Creates a new instance
         /// </summary>
         /// <param name="connectionString">The connection string to conenct with the SQL Server database</param>
-        public SqliteEntityCollectionFactory(string connectionString) : this(connectionString, new SqlCommandProviderFactory())
+        public SqliteEntityCollectionFactory(string connectionString) : this(connectionString, new SqlLiteCommandProviderFactory())
         {
 
         }
@@ -23,8 +23,8 @@ namespace Luval.DataStore.Database.Sqlite
         /// Creates a new instance
         /// </summary>
         /// <param name="connectionString">The connection string to conenct with the SQL Server database</param>
-        /// <param name="commandProviderFactory">The <see cref="SqlCommandProviderFactory"/> to use</param>
-        public SqliteEntityCollectionFactory(string connectionString, SqlCommandProviderFactory commandProviderFactory) : this(new SqliteDataStore(connectionString), commandProviderFactory)
+        /// <param name="commandProviderFactory">The <see cref="SqlLiteCommandProviderFactory"/> to use</param>
+        public SqliteEntityCollectionFactory(string connectionString, SqlLiteCommandProviderFactory commandProviderFactory) : this(new SqliteDataStore(connectionString), commandProviderFactory)
         {
 
         }
@@ -34,7 +34,7 @@ namespace Luval.DataStore.Database.Sqlite
         /// </summary>
         /// <param name="dataStore">The <see cref="SqlDataStore"/> to use</param>
         /// <param name="commandProviderFactory">The <see cref="SqlCommandProviderFactory"/> to use</param>
-        public SqliteEntityCollectionFactory(SqliteDataStore dataStore, SqlCommandProviderFactory commandProviderFactory) : base(dataStore, commandProviderFactory)
+        public SqliteEntityCollectionFactory(SqliteDataStore dataStore, SqlLiteCommandProviderFactory commandProviderFactory) : base(dataStore, commandProviderFactory)
         {
         }
     }

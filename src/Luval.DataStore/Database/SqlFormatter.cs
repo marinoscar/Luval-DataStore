@@ -1,4 +1,5 @@
 ﻿using Luval.DataStore.Extensions;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,6 +15,17 @@ namespace Luval.DataStore.Database
     /// </summary>
     public class SqlFormatter : IFormatProvider, ICustomFormatter
     {
+
+        /// <summary>
+        /// Format for Sql dates
+        /// </summary>
+        public const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
+
+        /// <summary>
+        /// Format for Sql time
+        /// </summary>
+        public const string TimeFormat = "HH:mm:ss.fff";
+
         /// <summary>
         /// Singleton implementation of <see cref="SqlFormatter"/>
         /// </summary>
@@ -59,19 +71,32 @@ namespace Luval.DataStore.Database
                 return "NULL";
             }
 
-            if (o is DateTime || o is DateTime?)
+            if (o is DateTime)
             {
-                return prefix + string.Format("'{0:yyyy-MM-dd HH:mm:ss.fff}'", o);
+                return prefix + string.Format("'{0}'", FormatDateTimeAsString((DateTime)o));
+            }
+            if(o is DateTime?)
+            {
+                return prefix + string.Format("'{0}'", FormatDateTimeAsString(((DateTime?)o).Value));
             }
 
             if (o is DateTimeOffset)
             {
-                return prefix + string.Format("'{0:yyyy-MM-dd HH:mm:ss.fff}'", ((DateTimeOffset)o).UtcDateTime);
+                return prefix + string.Format("'{0}'", FormatDateTimeAsString(((DateTimeOffset)o).UtcDateTime));
             }
 
             if (o is DateTimeOffset?)
             {
-                return prefix + string.Format("'{0:yyyy-MM-dd HH:mm:ss.fff}'", ((DateTimeOffset?)o).Value.UtcDateTime);
+                return prefix + string.Format("'{0}'", FormatDateTimeAsString(((DateTimeOffset?)o).Value.UtcDateTime));
+            }
+
+            if (o is TimeSpan)
+            {
+                return prefix + string.Format("'{0}'", FormatDateTimeAsString((DateTime)o));
+            }
+            if (o is TimeSpan?)
+            {
+                return prefix + string.Format("'{0}'", FormatDateTimeAsString(((DateTime?)o).Value));
             }
 
             if (o is Enum)
@@ -170,6 +195,24 @@ namespace Luval.DataStore.Database
             }
 
             return prefix + "{0}".Fi(o);
+        }
+
+        /// <summary>
+        /// Formats a date object into a string
+        /// </summary>
+        /// <param name="dateTime">The <see cref="DateTime"/> to format</param>
+        public static string FormatDateTimeAsString(DateTime dateTime)
+        {
+            return string.Format(DateTimeFormat, dateTime);
+        }
+
+        /// <summary>
+        /// Formats a time object into a string
+        /// </summary>
+        /// <param name="timeSpan">The <see cref="TimeSpan"/> to format</param>
+        public static string FormatTimeAsString(TimeSpan timeSpan)
+        {
+            return string.Format(TimeFormat, timeSpan);
         }
     }
 }

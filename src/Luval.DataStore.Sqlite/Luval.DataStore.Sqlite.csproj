@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon>luval-128x128.ico</ApplicationIcon>
     <Title>Luval Data Store Sqlite</Title>
-    <Version>1.2.2</Version>
+    <Version>1.2.4</Version>
     <Authors>Oscar Marin</Authors>
     <Copyright>Oscar Marin</Copyright>
     <PackageProjectUrl>https://github.com/marinoscar/Luval-DataStore</PackageProjectUrl>
@@ -29,8 +29,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Luval.DataStore" Version="1.2.2" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.116" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Luval.DataStore\Luval.DataStore.csproj" />
   </ItemGroup>
 
 </Project>

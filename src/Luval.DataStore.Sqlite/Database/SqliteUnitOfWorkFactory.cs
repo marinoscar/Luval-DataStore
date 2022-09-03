@@ -12,8 +12,8 @@ namespace Luval.DataStore.Database.Sqlite
         /// <summary>
         /// Creates a new instance
         /// </summary>
-        /// <param name="connectionString">The connection string to conenct with the SQL Server database</param>
-        public SqliteUnitOfWorkFactory(string connectionString) : this(new SqliteEntityCollectionFactory(connectionString))
+        /// <param name="dataStore">The <see cref="SqliteDataStore"/> to use</param>
+        public SqliteUnitOfWorkFactory(SqliteDataStore dataStore) : this(new SqliteEntityCollectionFactory(dataStore))
         {
 
         }

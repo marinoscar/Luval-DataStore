@@ -15,8 +15,9 @@ namespace Luval.DataStore.Database.Sqlite
         /// <summary>
         /// Creates a new instance
         /// </summary>
-        /// <param name="fileName">The connection string to conenct with the Sqlite database</param>
-        public SqliteDataStore(string fileName) : this(fileName, new SqlCommandFactory())
+        /// <param name="connectionString">The connection string to conenct with the Sqlite database</param>
+        /// <param name="parseViaFramework">Flag to indicate if the connection should parse via framework</param>
+        public SqliteDataStore(string connectionString, bool parseViaFramework = false) : this(connectionString, new SqlCommandFactory(), parseViaFramework)
         {
 
         }
@@ -24,9 +25,10 @@ namespace Luval.DataStore.Database.Sqlite
         /// <summary>
         /// Creates a new instance
         /// </summary>
-        /// <param name="fileName">The connection string to conenct with the Sqlite database</param>
+        /// <param name="connectionString">The connection string to conenct with the Sqlite database</param>
         /// <param name="sqlCommandFactory">An implementation of <see cref="ISqlCommandFactory"/> to configure the <see cref="IDbCommand"/> instances</param>
-        public SqliteDataStore(string fileName, ISqlCommandFactory sqlCommandFactory) : this(fileName, sqlCommandFactory, new ReflectionDataRecordMapper())
+        /// <param name="parseViaFramework">Flag to indicate if the connection should parse via framework</param>
+        public SqliteDataStore(string connectionString, ISqlCommandFactory sqlCommandFactory, bool parseViaFramework = false) : this(connectionString, sqlCommandFactory, new ReflectionDataRecordMapper(), parseViaFramework)
         {
 
         }
@@ -34,11 +36,47 @@ namespace Luval.DataStore.Database.Sqlite
         /// <summary>
         /// Creates a new instance
         /// </summary>
-        /// <param name="fileName">The connection string to conenct with the Sqlite database</param>
+        /// <param name="connectionString">The connection string to conenct with the Sqlite database</param>
         /// <param name="sqlCommandFactory">An implementation of <see cref="ISqlCommandFactory"/> to configure the <see cref="IDbCommand"/> instances</param>
         /// <param name="dataRecordMapper">The <see cref="IDataRecordMapper"/> implementation to parse the entity data</param>
-        public SqliteDataStore(string fileName, ISqlCommandFactory sqlCommandFactory, IDataRecordMapper dataRecordMapper) :
-            this(() => new SQLiteConnection(GetConnectionStringFromFileName(fileName)), sqlCommandFactory, dataRecordMapper)
+        /// <param name="parseViaFramework">Flag to indicate if the connection should parse via framework</param>
+        public SqliteDataStore(string connectionString, ISqlCommandFactory sqlCommandFactory, IDataRecordMapper dataRecordMapper, bool parseViaFramework = false) :
+            this(() => new SQLiteConnection(connectionString, parseViaFramework), sqlCommandFactory, dataRecordMapper)
+        {
+
+        }
+
+        /// <summary>
+        /// Creates a new instance
+        /// </summary>
+        /// <param name="databaseFile">The <see cref="FileInfo"/> with the database location</param>
+        /// <param name="parseViaFramework">Flag to indicate if the connection should parse via framework</param>
+        public SqliteDataStore(FileInfo databaseFile, bool parseViaFramework = false) :
+            this(databaseFile, new SqlCommandFactory(), parseViaFramework)
+        {
+
+        }
+
+        /// <summary>
+        /// Creates a new instance
+        /// </summary>
+        /// <param name="databaseFile">The <see cref="FileInfo"/> with the database location</param>
+        /// <param name="sqlCommandFactory">An implementation of <see cref="ISqlCommandFactory"/> to configure the <see cref="IDbCommand"/> instances</param>
+        /// <param name="parseViaFramework">Flag to indicate if the connection should parse via framework</param>
+        public SqliteDataStore(FileInfo databaseFile, ISqlCommandFactory sqlCommandFactory, bool parseViaFramework = false) :
+            this(databaseFile, sqlCommandFactory, new ReflectionDataRecordMapper(), parseViaFramework)
+        {
+
+        }
+
+        /// <summary>
+        /// Creates a new instance
+        /// </summary>
+        /// <param name="databaseFile">The <see cref="FileInfo"/> with the database location</param>
+        /// <param name="sqlCommandFactory">An implementation of <see cref="ISqlCommandFactory"/> to configure the <see cref="IDbCommand"/> instances</param>
+        /// <param name="parseViaFramework">Flag to indicate if the connection should parse via framework</param>
+        public SqliteDataStore(FileInfo databaseFile, ISqlCommandFactory sqlCommandFactory, IDataRecordMapper dataRecordMapper, bool parseViaFramework = false) :
+            this(GetConnectionStringFromFileName(databaseFile.FullName), sqlCommandFactory, dataRecordMapper, parseViaFramework)
         {
 
         }
@@ -55,7 +93,7 @@ namespace Luval.DataStore.Database.Sqlite
 
         private static string GetConnectionStringFromFileName(string fileName)
         {
-            return String.Format("URI=file:{0}", fileName);
+            return String.Format(@"Data Source={0};Version=3;", fileName);
         }
     }
 }
